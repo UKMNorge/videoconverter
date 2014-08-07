@@ -138,14 +138,14 @@ if($upload_image[0]) {
 }
 error_log('VIDEO STORAGE '. $cron['id'] .': NOTIFY STORAGE SERVER');
 error_log('VIDEO STORAGE '. $cron['id'] .': CRON URL');
-error_log('VIDEO STORAGE '. $cron['id'] .': http://api.ukm.no/video:registrer/'.$cron['id']);
+error_log('VIDEO STORAGE '. $cron['id'] .': http://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
 error_log('VIDEO STORAGE '. $cron['id'] .': CRON DATA');
 error_log('VIDEO STORAGE '. $cron['id'] .': '. var_export($cron, true));
 // NOTIFY UKM.no VIDEO IS CONVERTED AND TRANSFERRED TO STORAGE
 require_once('../inc/curl.class.php');
 $register = new UKMCURL();
 $register->post($cron);
-$register->request('http://api.ukm.no/video:registrer/'.$cron['id']);
+$register->request('http://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
 echo '<h2>Registering with UKM.no</h2>';
 echo $register->data;
 error_log('VIDEO STORAGE '. $cron['id'] .': '. $register->data);

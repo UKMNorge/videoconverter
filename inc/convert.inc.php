@@ -247,4 +247,4 @@ require_once('../inc/functions.inc.php');
 	require_once('../inc/curl.class.php');
 	$store = new UKMCURL();
 	$store->timeout(2);
-	$store->request('http://videoconverter.ukm.no/cron/store.cron.php');
+	$store->request('http://videoconverter. ' . UKM_HOSTNAME . '/cron/store.cron.php');

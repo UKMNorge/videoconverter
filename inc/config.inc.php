@@ -26,9 +26,7 @@ define('AUDIO_BITRATE_MOBILE', 128);
 define('AUDIO_SAMPLINGRATE_MOBILE', 44100);
 define('VIDEO_BITRATE_MOBILE', 890);
 
-//define('REMOTE_SERVER', 'http://video.ukm.no');
-#define('REMOTE_SERVER', 'http://video2.ukm.no');
-define('REMOTE_SERVER', '10.0.1.181');
+define('REMOTE_SERVER', 'http://video.' . UKM_HOSTNAME);
 
 // DATABASE CONNECTION
 $connect = mysql_connect('localhost', UKM_VIDEOCONVERTER_DB_USER, UKM_VIDEOCONVERTER_DB_PASS) or die(mysql_error());
