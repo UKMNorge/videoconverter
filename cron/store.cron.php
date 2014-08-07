@@ -3,6 +3,7 @@
 // CONVERT.INC.PHP TRIGGERS THIS CRON BY CURL(timeout: 2)
 ignore_user_abort(true);
 
+require_once('UKMconfig.inc.php');
 require_once('../inc/config.inc.php');
 require_once('../inc/functions.inc.php');
 
