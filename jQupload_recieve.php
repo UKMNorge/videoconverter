@@ -4,6 +4,7 @@ ini_set("error_log", dirname(__FILE__).'/error.log');
 ini_set('display_errors', 0);
 
 require_once('inc/jQupload_handler.inc.php');
+require_once('UKMconfig.inc.php');
 require_once('inc/config.inc.php');
 
 

@@ -1,4 +1,7 @@
 <?php
+
+require_once('UKMconfig.inc.php');
+
 ################################################
 ## SET ALL HEADERS AND ACTUALLY PERFORM UPLOAD 
 header('Access-Control-Allow-Headers: true');
