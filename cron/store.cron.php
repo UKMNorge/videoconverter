@@ -70,7 +70,7 @@ $file_log_image		 	= $file_log_raw_image . '_image.txt';
 
 error_log('VIDEO STORAGE '. $cron['id'] .': Send HD-file to '. REMOTE_SERVER);
 $curl_hd = new CurlFileUploader($file_store_hd,										// FILE TO SEND
-								 REMOTE_SERVER.'/recieve.php',						// SERVER TO RECIEVE (SCRIPT)
+								 REMOTE_SERVER.'/receive.php',						// SERVER TO RECEIVE (SCRIPT)
 								 'file',											// NAME OF FILES-ARRAY
 								 array( 'file_name' => $file_name_output_hd,		// NAME TO BE STORED AS
 							 			'file_path' => $cron['file_path']			// PATH TO BE STORED AT
@@ -80,7 +80,7 @@ $upload_hd = $curl_hd->UploadFile();
 
 error_log('VIDEO STORAGE '. $cron['id'] .': Send mobile-file to '. REMOTE_SERVER);
 $curl_mobile = new CurlFileUploader($file_store_mobile,								// FILE TO SEND
-									REMOTE_SERVER.'/recieve.php',					// SERVER TO RECIEVE (SCRIPT)
+									REMOTE_SERVER.'/receive.php',					// SERVER TO RECEIVE (SCRIPT)
 									'file',											// NAME OF FILES-ARRAY
 									array( 'file_name' => $file_name_output_mobile,	// NAME TO BE STORED AS
 										   'file_path' => $cron['file_path']		// PATH TO BE STORED AT
@@ -90,7 +90,7 @@ $upload_mobile = $curl_mobile->UploadFile();
 
 error_log('VIDEO STORAGE '. $cron['id'] .': Send image-file to '. REMOTE_SERVER);
 $curl_image = new CurlFileUploader( $file_store_image,								// FILE TO SEND
-									REMOTE_SERVER.'/recieve.php',					// SERVER TO RECIEVE (SCRIPT)
+									REMOTE_SERVER.'/receive.php',					// SERVER TO RECEIVE (SCRIPT)
 									'file',											// NAME OF FILES-ARRAY
 									array( 'file_name' => $file_name_output_image,	// NAME TO BE STORED AS
 							 			   'file_path' => $cron['file_path']		// PATH TO BE STORED AT
