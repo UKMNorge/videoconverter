@@ -7,14 +7,6 @@ require_once('UKMconfig.inc.php');
 require_once('../inc/config.inc.php');
 require_once('../inc/functions.inc.php');
 
-function logg( $message ) {
-    error_log('VIDEO STORAGE '. CRON_ID .': '. $message );
-}
-
-function notify( $message ) {
-    error_log('SERVER ADMIN NOTIFICATION: cid'. CRON_ID .': '. $message );
-}
-
 // IF ALREADY TRANSFERRING ONE, TAKE A NAP
 $test = "SELECT `id` FROM `ukmtv`
 		WHERE `status_progress` = 'transferring'
@@ -35,8 +27,9 @@ $cron = mysql_fetch_assoc( $res );
 if(!$cron)
 	die('Nothing to store!');
 
+define('LOG_SCRIPT_NAME', 'VIDEO STORAGE');
 define('CRON_ID', $cron['id']);
-logg('PROCESS STORAGE');	
+logg('START');	
 
 // Settings status to transferring
 // End of script will set status back to

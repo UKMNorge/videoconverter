@@ -195,56 +195,61 @@ require_once('../inc/functions.inc.php');
 		. $file_log_image						# Logg-fil
 		;
 		
-	
-	$timer_call1 = microtime(true);
-	echo '<h2>Call HD</h2>' . $call_hd;
-		exec($call_hd, $response_hd);
-		echo '<h3>Response</h3>';
-		var_dump($response_hd);
-		$timer_call2 = microtime(true);
-		echo '<h3>Time: '. ($timer_call2 - $timer_call1) .'</h3>';
-		
-	echo '<h2>Call MOBILE</h2>' . $call_mobile;
-		exec($call_mobile, $response_mobile);
-		echo '<h3>Response</h3>';
-		var_dump($response_mobile);
-		$timer_call3 = microtime(true);
-		echo '<h3>Time: '. ($timer_call3 - $timer_call2) .'</h3>';
+        
+    define('CRON_ID', $cron['id']);
+    define('LOG_SCRIPT_NAME', 'CONVERT.INC.PHP');
+    logg('START');
+    logg('CONVERT PASS: '. CONVERT_PASS);
+    
+    $ERROR = false;
+    
+    $create = array('hd' => 'HD', 'mobile' => 'MOB', 'image' => 'IMG');
+    foreach( $create as $varname => $name ) {
+        if( $ERROR ) {
+            break;
+        }
+        
+        logg('CONVERT '. $name);
+        $timer_start = microtime(true);
+        exec(${'call_'.$varname}, ${'response_'.$varname});
+        logg('CONVERT '. $name .' RESPONSE: '. var_export( ${'response_'.$varname}, true));
+        $timer_stop = microtime(true);
+        logg('CONVERT '. $name .' TIME: '. ($timer_stop-$timer_start));
+        
+        if( ${'response_'.$varname} != null ) {
+            logg('FAILED! ERROR discovered, set status = "crashed" and move on');
+            $ERROR = true;
+        }
+    }
 
-	echo '<h2>Call IMAGE</h2>' . $call_image;
-		exec($call_image, $response_image);
-		echo '<h3>Response</h3>';
-		var_dump($response_image);
-		$timer_call4 = microtime(true);
-		echo '<h3>Time: '. ($timer_call4 - $timer_call3) .'</h3>';
-
-	
-	// UPDATE DATABASE - WE'RE NOW CONVERTED
-	ukmtv_update($dbfield, 'complete', $cron['id']);
-	$timer_stop = microtime(true);
-	$timer_exec = $timer_stop - $timer_start;
-	echo '<h2>Total time: '. $timer_exec .'</h2>';
-
-	ukmtv_update('status_progress', 'store', $cron['id']);
-	
-/*
-	if(CONVERT_PASS == 'final') {
-		ukmtv_update('status_progress', 'converted', $cron['id']);
-	}
-*/
-	
-	// Slett converted-filene ( bevarer convert + store-filene)
-	// Store vil slette de to siste + logger
-	unlink($file_output_hd);
-	unlink($file_output_mobile);
-	unlink($file_x264.'-0.log');
-	unlink($file_x264.'-0.log.mbtree');
-	
-	// Trigger transfer of file to storage server
-	echo '<h1>Triggering start of store-cron</h1>';
-	echo 'Cron will self make sure only one file is transferred';
-	
-	require_once('../inc/curl.class.php');
-	$store = new UKMCURL();
-	$store->timeout(2);
-	$store->request('http://videoconverter. ' . UKM_HOSTNAME . '/cron/store.cron.php');
+	if( $ERROR ) {
+    	ukmtv_update('status_progress', 'crashed', $cron['id']);
+    	logg('FAILURE! END OF CRON.');
+	} else {
+	    logg('CONVERT COMPLETE');
+    	// UPDATE DATABASE - WE'RE NOW CONVERTED
+    	ukmtv_update($dbfield, 'complete', $cron['id']);
+    	ukmtv_update('status_progress', 'store', $cron['id']);
+    	
+    /*
+    	if(CONVERT_PASS == 'final') {
+    		ukmtv_update('status_progress', 'converted', $cron['id']);
+    	}
+    */
+    	
+    	// Slett converted-filene ( bevarer convert + store-filene)
+    	// Store vil slette de to siste + logger
+    	unlink($file_output_hd);
+    	unlink($file_output_mobile);
+    	unlink($file_x264.'-0.log');
+    	unlink($file_x264.'-0.log.mbtree');
+    	
+    	// Trigger transfer of file to storage server
+    	echo '<h1>Triggering start of store-cron</h1>';
+    	echo 'Cron will self make sure only one file is transferred';
+    	
+    	require_once('../inc/curl.class.php');
+    	$store = new UKMCURL();
+    	$store->timeout(2);
+    	$store->request('http://videoconverter. ' . UKM_HOSTNAME . '/cron/store.cron.php');
+    }
