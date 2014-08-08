@@ -77,7 +77,7 @@ foreach( $transfer as $varname => $name ) {
     // SIGN
     $file_hash = hash_file('sha256', ${'file_store_'.$varname} );
     $file_path = $cron['file_path'];
-    $timestamp = date();
+    $timestamp = time();
     
     $msg = "file_path=$file_path&file_hash=$file_hash&timestamp=$timestamp";
     $sign = hash_hmac('sha256', $msg, UKM_VIDEOSTORAGE_UPLOAD_KEY);
