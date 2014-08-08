@@ -9,27 +9,27 @@ require_once('../inc/functions.inc.php');
 
 // IF ALREADY TRANSFERRING ONE, TAKE A NAP
 $test = "SELECT `id` FROM `ukmtv`
-		WHERE `status_progress` = 'transferring'
-		ORDER BY `id` ASC
-		LIMIT 1";
+        WHERE `status_progress` = 'transferring'
+        ORDER BY `id` ASC
+        LIMIT 1";
 $testres = mysql_query( $test );
 if( mysql_num_rows( $testres ) > 0 )
-	die('Already transferring one film. Waiting for this to finish');
+    die('Already transferring one film. Waiting for this to finish');
 
 // FIND NEXT TRANSFERJOB
 $sql = "SELECT * FROM `ukmtv`
-		WHERE `status_progress` = 'store'
-		ORDER BY `id` ASC
-		LIMIT 1";
+        WHERE `status_progress` = 'store'
+        ORDER BY `id` ASC
+        LIMIT 1";
 
 $res = mysql_query( $sql );
 $cron = mysql_fetch_assoc( $res );
 if(!$cron)
-	die('Nothing to store!');
+    die('Nothing to store!');
 
 define('LOG_SCRIPT_NAME', 'VIDEO STORAGE');
 define('CRON_ID', $cron['id']);
-logg('START');	
+logg('START');
 
 // Settings status to transferring
 // End of script will set status back to
@@ -43,31 +43,31 @@ ini_set('display_errors', true);
 require_once('../inc/smartcore.fileCurl.php');
 require_once('../inc/curl.class.php');
 
-$file_name_input			= $cron['file_name'];
-$file_name_output_raw		= str_replace($cron['file_type'], '', $file_name_input);
-$file_name_output_hd		= $file_name_output_raw . $file_extension_hd;
-$file_name_output_mobile	= $file_name_output_raw . $file_extension_mobile;
-$file_name_output_image		= $file_name_output_raw . '.jpg';
+$file_name_input            = $cron['file_name'];
+$file_name_output_raw       = str_replace($cron['file_type'], '', $file_name_input);
+$file_name_output_hd        = $file_name_output_raw . $file_extension_hd;
+$file_name_output_mobile    = $file_name_output_raw . $file_extension_mobile;
+$file_name_output_image     = $file_name_output_raw . '.jpg';
 
 // Full paths to ffmpeg files
-$file_input				= DIR_TEMP_CONVERT . $file_name_input;	
+$file_input             = DIR_TEMP_CONVERT . $file_name_input;
 
-$file_output_hd			= DIR_TEMP_CONVERTED . $file_name_output_hd;
-$file_output_mobile		= DIR_TEMP_CONVERTED . $file_name_output_mobile;
+$file_output_hd         = DIR_TEMP_CONVERTED . $file_name_output_hd;
+$file_output_mobile     = DIR_TEMP_CONVERTED . $file_name_output_mobile;
 
-$file_store_hd			= DIR_TEMP_STORE . $file_name_output_hd;
-$file_store_mobile		= DIR_TEMP_STORE . $file_name_output_mobile;
-$file_store_image		= DIR_TEMP_STORE . $file_name_output_raw.'.jpg';
+$file_store_hd          = DIR_TEMP_STORE . $file_name_output_hd;
+$file_store_mobile      = DIR_TEMP_STORE . $file_name_output_mobile;
+$file_store_image       = DIR_TEMP_STORE . $file_name_output_raw.'.jpg';
 
-$file_log_raw_hd		= DIR_TEMP_LOG . $file_name_output_raw . $file_id_hd;
-$file_log_raw_mobile	= DIR_TEMP_LOG . $file_name_output_raw . $file_id_mobile;
-$file_log_raw_image		= DIR_TEMP_LOG . $file_name_output_raw;
+$file_log_raw_hd        = DIR_TEMP_LOG . $file_name_output_raw . $file_id_hd;
+$file_log_raw_mobile    = DIR_TEMP_LOG . $file_name_output_raw . $file_id_mobile;
+$file_log_raw_image     = DIR_TEMP_LOG . $file_name_output_raw;
 
-$file_log_fp_hd			= $file_log_raw_hd . '_firstpass.txt';
-$file_log_fp_mobile		= $file_log_raw_mobile . '_firstpass.txt';
-$file_log_sp_hd			= $file_log_raw_hd . '_secondpass.txt';
-$file_log_sp_mobile	 	= $file_log_raw_mobile . '_secondpass.txt';
-$file_log_image		 	= $file_log_raw_image . '_image.txt';
+$file_log_fp_hd         = $file_log_raw_hd . '_firstpass.txt';
+$file_log_fp_mobile     = $file_log_raw_mobile . '_firstpass.txt';
+$file_log_sp_hd         = $file_log_raw_hd . '_secondpass.txt';
+$file_log_sp_mobile     = $file_log_raw_mobile . '_secondpass.txt';
+$file_log_image         = $file_log_raw_image . '_image.txt';
 
 $transfer = array('hd' => 'HD', 'mobile' => 'MOB', 'image' => 'IMG');
 
@@ -77,23 +77,23 @@ foreach( $transfer as $varname => $name ) {
         break;
     }
     logg($name .' FILE: Send to '. REMOTE_SERVER);
-    
+
     // SIGN
     $file_hash = hash_file('sha256', ${'file_store_'.$varname} );
     $file_path = $cron['file_path'];
     $timestamp = time();
-    
+
     $msg = "file_path=$file_path&file_hash=$file_hash&timestamp=$timestamp";
     $sign = hash_hmac('sha256', $msg, UKM_VIDEOSTORAGE_UPLOAD_KEY);
 
-    $curl_request = new CurlFileUploader(${'file_store_'.$varname},								  // FILE TO SEND
-    			    					 REMOTE_SERVER.'/receive.php',						      // SERVER TO RECEIVE (SCRIPT)
-                                         'file',											      // NAME OF FILES-ARRAY
-                                         array( 'file_name' => ${'file_name_output_'.$varname},	  // NAME TO BE STORED AS
-    			    				 			'file_path' => $cron['file_path'],			      // PATH TO BE STORED AT
-    			    				 			'file_hash' => $file_hash,                        // HASH OF LOCAL FILE
-    			    				 			'sign'      => $sign,                             // CONCAT SIGN OF ALL VALUES
-    			    				 			'timestamp' => $timestamp
+    $curl_request = new CurlFileUploader(${'file_store_'.$varname},                               // FILE TO SEND
+                                         REMOTE_SERVER.'/receive.php',                            // SERVER TO RECEIVE (SCRIPT)
+                                         'file',                                                  // NAME OF FILES-ARRAY
+                                         array( 'file_name' => ${'file_name_output_'.$varname},   // NAME TO BE STORED AS
+                                                'file_path' => $cron['file_path'],                // PATH TO BE STORED AT
+                                                'file_hash' => $file_hash,                        // HASH OF LOCAL FILE
+                                                'sign'      => $sign,                             // CONCAT SIGN OF ALL VALUES
+                                                'timestamp' => $timestamp
                                               )
                                         );
     $response = $curl_request->UploadFile();
