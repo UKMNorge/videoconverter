@@ -121,7 +121,7 @@ $register = new UKMCURL();
 $register->post($cron);
 $register->request('http://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
 
-foreach( $register->data as $key => $val ) {
+foreach( $register as $key => $val ) {
     logg( 'CURL RESPONSE:'.$key .' => '. var_export( $val, true ) );
 }
 
