@@ -113,9 +113,9 @@ require_once('../inc/functions.inc.php');
 	
 		## AUDIO
 		. '-c:a libfdk_aac '						# Bruk videocodec libfdk_aac
-		. '-cutoff 18000'						# Cutoff-frekvens på lyd (default for libfdk_aac er 15kHz)
+		. '-cutoff 18000 '						# Cutoff-frekvens på lyd (default for libfdk_aac er 15kHz)
 		. '-aq 100 '							# Audiokvalitet 100%
-		. '-ab '.AUDIO_BITRATE_HD.'k '			# Audio bitrate fra config
+		. '-b:a '.AUDIO_BITRATE_HD.'k '			# Audio bitrate fra config
 		. '-ar '.AUDIO_SAMPLINGRATE_HD.' '		# Audio sampling rate (Hz) fra config
 		. '-s '. $video_resolution_hd.' '		# Videooppløsning
 		. '-f mp4 '. $file_output_hd .' 2> '	# Output MP4-fil (tving dette..?)
@@ -169,9 +169,9 @@ require_once('../inc/functions.inc.php');
 	
 		## AUDIO
 		. '-c:a libfdk_aac '						# Bruk videocodec libfdk_aac
-		. '-cutoff 18000'						# Cutoff-frekvens på lyd (default for libfdk_aac er 15kHz)
+		. '-cutoff 18000 '						# Cutoff-frekvens på lyd (default for libfdk_aac er 15kHz)
 		. '-aq 100 '							# Audiokvalitet 100%
-		. '-ab '.AUDIO_BITRATE_MOBILE.'k '		# Audio bitrate fra config
+		. '-b:a '.AUDIO_BITRATE_MOBILE.'k '		# Audio bitrate fra config
 		. '-ar '.AUDIO_SAMPLINGRATE_MOBILE.' '	# Audio sampling rate (Hz) fra config
 		. '-s '. $video_resolution_mobile.' '	# Videooppløsning
 		. '-f mp4 '. $file_output_mobile .' 2> '# Output MP4-fil (tving dette..?)
