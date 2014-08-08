@@ -192,7 +192,7 @@ require_once('../inc/functions.inc.php');
 		. '-s hd720 '							# Size of image
 		. '-f image2 '							# DUNNO
 		. '-vcodec mjpeg '						# Video-codec
-		. '-qscale 1 '							# DUNNO
+		. '-q:v 1 '							    # Bruk VBR
 		. $file_store_image . ' 2> '			# Output-fil
 		. $file_log_image						# Logg-fil
 		;
