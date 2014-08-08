@@ -7,6 +7,14 @@ require_once('UKMconfig.inc.php');
 require_once('../inc/config.inc.php');
 require_once('../inc/functions.inc.php');
 
+function logg( $message ) {
+    error_log('VIDEO STORAGE '. CRON_ID .': '. $message );
+}
+
+function notify( $message ) {
+    error_log('SERVER ADMIN NOTIFICATION: cid'. CRON_ID .': '. $message );
+}
+
 // IF ALREADY TRANSFERRING ONE, TAKE A NAP
 $test = "SELECT `id` FROM `ukmtv`
 		WHERE `status_progress` = 'transferring'
@@ -27,9 +35,8 @@ $cron = mysql_fetch_assoc( $res );
 if(!$cron)
 	die('Nothing to store!');
 
-	
-error_log('VIDEO STORAGE '. $cron['id'] .': Init cron, start processing');
-echo '<h1>Storing cron '. $cron['id'] .'</h1>';
+define('CRON_ID', $cron['id']);
+logg('PROCESS STORAGE');	
 
 // Settings status to transferring
 // End of script will set status back to
@@ -41,6 +48,7 @@ ukmtv_update('status_progress', 'transferring', $cron['id']);
 
 ini_set('display_errors', true);
 require_once('../inc/smartcore.fileCurl.php');
+require_once('../inc/curl.class.php');
 
 $file_name_input			= $cron['file_name'];
 $file_name_output_raw		= str_replace($cron['file_type'], '', $file_name_input);
@@ -68,88 +76,49 @@ $file_log_sp_hd			= $file_log_raw_hd . '_secondpass.txt';
 $file_log_sp_mobile	 	= $file_log_raw_mobile . '_secondpass.txt';
 $file_log_image		 	= $file_log_raw_image . '_image.txt';
 
-error_log('VIDEO STORAGE '. $cron['id'] .': Send HD-file to '. REMOTE_SERVER);
-$curl_hd = new CurlFileUploader($file_store_hd,										// FILE TO SEND
-								 REMOTE_SERVER.'/receive.php',						// SERVER TO RECEIVE (SCRIPT)
-								 'file',											// NAME OF FILES-ARRAY
-								 array( 'file_name' => $file_name_output_hd,		// NAME TO BE STORED AS
-							 			'file_path' => $cron['file_path']			// PATH TO BE STORED AT
-							 			)
-							 	);
-$upload_hd = $curl_hd->UploadFile();
+$transfer = array('hd' => 'HD', 'mobile' => 'MOB', 'image' => 'IMG');
 
-error_log('VIDEO STORAGE '. $cron['id'] .': Send mobile-file to '. REMOTE_SERVER);
-$curl_mobile = new CurlFileUploader($file_store_mobile,								// FILE TO SEND
-									REMOTE_SERVER.'/receive.php',					// SERVER TO RECEIVE (SCRIPT)
-									'file',											// NAME OF FILES-ARRAY
-									array( 'file_name' => $file_name_output_mobile,	// NAME TO BE STORED AS
-										   'file_path' => $cron['file_path']		// PATH TO BE STORED AT
-								 		 )
-								   );
-$upload_mobile = $curl_mobile->UploadFile();
+foreach( $transfer as $varname => $name ) {
+    logg($name .' FILE: Send to '. REMOTE_SERVER);
+    $curl_request = new CurlFileUploader(${'file_store_'.$varname},								  // FILE TO SEND
+    			    					 REMOTE_SERVER.'/receive.php',						      // SERVER TO RECEIVE (SCRIPT)
+                                         'file',											      // NAME OF FILES-ARRAY
+                                         array( 'file_name' => ${'file_name_output_'.$varname},	  // NAME TO BE STORED AS
+    			    				 			'file_path' => $cron['file_path']			      // PATH TO BE STORED AT
+                                              )
+                                        );
+    $response = $curl_request->UploadFile();
 
-error_log('VIDEO STORAGE '. $cron['id'] .': Send image-file to '. REMOTE_SERVER);
-$curl_image = new CurlFileUploader( $file_store_image,								// FILE TO SEND
-									REMOTE_SERVER.'/receive.php',					// SERVER TO RECEIVE (SCRIPT)
-									'file',											// NAME OF FILES-ARRAY
-									array( 'file_name' => $file_name_output_image,	// NAME TO BE STORED AS
-							 			   'file_path' => $cron['file_path']		// PATH TO BE STORED AT
-							 			 )
-							 	  );
-$upload_image = $curl_image->UploadFile();
-
-echo '<h2>File storage</h2>';
-
-error_log('VIDEO STORAGE '. $cron['id'] .': SOME SORT OF ERROR HANDLE');
-error_log('VIDEO STORAGE '. $cron['id'] .': UPLOAD HD');
-if($upload_hd[0]) {
-	$report = json_decode( $upload_hd[1] );
-	if($report->success)
-		echo '<strong>SUCCESS!</strong>: ';
-	else
-		echo '<strong>ERROR!!</strong>: '; 
-	
-	echo $report->file_name . '<br />'
-			.' &nbsp; storing @ ' . $report->file_abs_path .'<br />';
-	error_log('VIDEO STORAGE '. $cron['id'] .': '. $report->file_name . '- storing @ ' . $report->file_abs_path	);
+    logg($name .' FILE: RESPONSE');
+    if($response[0]) {
+    	$report = json_decode( $response[1] );
+    
+    	if($report->success) {
+        	logg($name .' FILE: SUCCESS!');
+    	} else {
+        	logg($name .' FILE: FAILURE (Storage server)');
+        	notify('Unable to store '. $name .' file. Storage server failure');
+    	}
+    	logg($name .' FILE: '. $report->file_name . ' storing @ ' . $report->file_abs_path	);
+    } else {
+        logg($name .' FILE: Failed to send file');
+        notify('Unable to reach storage server. '. $name .' file not sent');
+    }
 }
-error_log('VIDEO STORAGE '. $cron['id'] .': UPLOAD MOBILE');
-if($upload_mobile[0]) {
-	$report = json_decode( $upload_mobile[1] );
-	if($report->success)
-		echo '<strong>SUCCESS!</strong>: ';
-	else
-		echo '<strong>ERROR!!</strong>: '; 
-	
-	echo $report->file_name . '<br />'
-			.' &nbsp; storing @ ' . $report->file_abs_path .'<br />';
-	error_log('VIDEO STORAGE '. $cron['id'] .': '. $report->file_name . '- storing @ ' . $report->file_abs_path	);
+
+logg('NOTIFY UKM.no');
+logg('http://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
+foreach( $cron as $key => $val ) {
+    logg( 'CURL POST:'.$key .' => '. var_export( $val, true ) );
 }
-error_log('VIDEO STORAGE '. $cron['id'] .': UPLOAD IMAGE');
-if($upload_image[0]) {
-	$report = json_decode( $upload_image[1] );
-	if($report->success)
-		echo '<strong>SUCCESS!</strong>: ';
-	else
-		echo '<strong>ERROR!!</strong>: '; 
-	
-	echo $report->file_name . '<br />'
-			.' &nbsp; storing @ ' . $report->file_abs_path .'<br />';
-	error_log('VIDEO STORAGE '. $cron['id'] .': '. $report->file_name . '- storing @ ' . $report->file_abs_path	);
-}
-error_log('VIDEO STORAGE '. $cron['id'] .': NOTIFY STORAGE SERVER');
-error_log('VIDEO STORAGE '. $cron['id'] .': CRON URL');
-error_log('VIDEO STORAGE '. $cron['id'] .': http://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
-error_log('VIDEO STORAGE '. $cron['id'] .': CRON DATA');
-error_log('VIDEO STORAGE '. $cron['id'] .': '. var_export($cron, true));
-// NOTIFY UKM.no VIDEO IS CONVERTED AND TRANSFERRED TO STORAGE
-require_once('../inc/curl.class.php');
+
 $register = new UKMCURL();
 $register->post($cron);
 $register->request('http://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
-echo '<h2>Registering with UKM.no</h2>';
-echo $register->data;
-error_log('VIDEO STORAGE '. $cron['id'] .': '. $register->data);
+
+foreach( $register->data as $key => $val ) {
+    logg( 'CURL RESPONSE:'.$key .' => '. var_export( $val, true ) );
+}
 
 // SET READY FOR SECOND CONVERT / ARCHIVING
 // a) converting (if status_final_convert not is complete)
@@ -157,33 +126,22 @@ error_log('VIDEO STORAGE '. $cron['id'] .': '. $register->data);
 // Script convert_final.cron will follow up on case a
 // Script archive.cron will follow up on case b
 if($cron['status_final_convert'] != 'complete') {
+    logg('NEXT STEP: converting (ready for final convert)')
 	ukmtv_update('status_progress', 'converting', $cron['id']);
 } else {
+    logg('NEXT STEP: archive (this was final convert, ready to archive)')
 	ukmtv_update('status_progress', 'archive', $cron['id']);
 }
 
-error_log('VIDEO STORAGE '. $cron['id'] .': CLEANUP');
-echo '<h2>Cleanup</h2>';
-echo '<h3>Log-files</h3>';
-echo 'Delete '. $file_log_fp_hd .' <br />';
 unlink( $file_log_fp_hd );
-echo 'Delete '. $file_log_fp_mobile .' <br />';
 unlink( $file_log_fp_mobile );
-echo 'Delete '. $file_log_sp_hd .' <br />';
 unlink( $file_log_sp_hd );
-echo 'Delete '. $file_log_sp_mobile .' <br />';
 unlink( $file_log_sp_mobile );
-echo 'Delete '. $file_log_image .' <br />';
 unlink( $file_log_image );
 
-
-echo '<h3>Video-files</h3>';
-echo 'Delete '. $file_store_hd .' <br />';
 unlink( $file_store_hd );
-echo 'Delete '. $file_store_mobile .' <br />';
 unlink( $file_store_mobile );
-echo 'Delete '. $file_store_image .' <br />';
 unlink( $file_store_image );
 
-error_log('VIDEO STORAGE '. $cron['id'] .': CRON SUCCESS!');
+logg('CRON END');
 // CONVERT-FILE WILL BE DELETED BY ARCHIVER
