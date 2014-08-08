@@ -131,10 +131,10 @@ foreach( $register->data as $key => $val ) {
 // Script convert_final.cron will follow up on case a
 // Script archive.cron will follow up on case b
 if($cron['status_final_convert'] != 'complete') {
-    logg('NEXT STEP: converting (ready for final convert)')
+    logg('NEXT STEP: converting (ready for final convert)');
 	ukmtv_update('status_progress', 'converting', $cron['id']);
 } else {
-    logg('NEXT STEP: archive (this was final convert, ready to archive)')
+    logg('NEXT STEP: archive (this was final convert, ready to archive)');
 	ukmtv_update('status_progress', 'archive', $cron['id']);
 }
 
