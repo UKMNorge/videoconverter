@@ -88,7 +88,7 @@ foreach( $transfer as $varname => $name ) {
                                          array( 'file_name' => ${'file_name_output_'.$varname},	  // NAME TO BE STORED AS
     			    				 			'file_path' => $cron['file_path'],			      // PATH TO BE STORED AT
     			    				 			'file_hash' => $file_hash,                        // HASH OF LOCAL FILE
-    			    				 			'sign'      => $sign                              // CONCAT SIGN OF ALL VALUES
+    			    				 			'sign'      => $sign,                             // CONCAT SIGN OF ALL VALUES
     			    				 			'timestamp' => $timestamp
                                               )
                                         );
