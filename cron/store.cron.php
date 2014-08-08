@@ -71,7 +71,11 @@ $file_log_image		 	= $file_log_raw_image . '_image.txt';
 
 $transfer = array('hd' => 'HD', 'mobile' => 'MOB', 'image' => 'IMG');
 
+$ERROR = false;
 foreach( $transfer as $varname => $name ) {
+    if( $ERROR ) {
+        break;
+    }
     logg($name .' FILE: Send to '. REMOTE_SERVER);
     
     // SIGN
@@ -96,57 +100,69 @@ foreach( $transfer as $varname => $name ) {
 
     logg($name .' FILE: RESPONSE');
     if($response[0]) {
-    	$report = json_decode( $response[1] );
-    
-    	if($report->success) {
-        	logg($name .' FILE: SUCCESS!');
-    	} else {
-        	logg($name .' FILE: FAILURE (Storage server)');
-        	notify('Unable to store '. $name .' file. Storage server failure');
-    	}
-    	logg($name .' FILE: '. $report->file_name . ' storing @ ' . $report->file_abs_path	);
+        $report = json_decode( $response[1] );
+
+        if($report->success) {
+            logg($name .' FILE: SUCCESS!');
+        } else {
+            $ERROR = true;
+            logg($name .' FILE: FAILURE (Storage server)');
+            notify('Unable to store '. $name .' file. Storage server failure');
+        }
+        logg($name .' FILE: '. $report->file_name . ' storing @ ' . $report->file_abs_path  );
     } else {
+        $ERROR = true;
         logg($name .' FILE: Failed to send file');
         notify('Unable to reach storage server. '. $name .' file not sent');
     }
 }
 
-logg('NOTIFY UKM.no');
-logg('http://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
-foreach( $cron as $key => $val ) {
-    logg( 'CURL POST:'.$key .' => '. var_export( $val, true ) );
-}
-
-$register = new UKMCURL();
-$register->post($cron);
-$register->request('http://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
-
-foreach( $register as $key => $val ) {
-    logg( 'CURL RESPONSE:'.$key .' => '. var_export( $val, true ) );
-}
-
-// SET READY FOR SECOND CONVERT / ARCHIVING
-// a) converting (if status_final_convert not is complete)
-// b) archive (if status_final_convert is complete)
-// Script convert_final.cron will follow up on case a
-// Script archive.cron will follow up on case b
-if($cron['status_final_convert'] != 'complete') {
-    logg('NEXT STEP: converting (ready for final convert)');
-	ukmtv_update('status_progress', 'converting', $cron['id']);
+if( $ERROR ) {
+    logg('FAILED TO STORE');
+    notify('Files converted, but one or more not sent to server');
+    ukmtv_update('status_progress', 'chrashed', $cron['id']);
 } else {
-    logg('NEXT STEP: archive (this was final convert, ready to archive)');
-	ukmtv_update('status_progress', 'archive', $cron['id']);
+    logg('NOTIFY UKM.no');
+    logg('http://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
+    foreach( $cron as $key => $val ) {
+        logg( 'CURL POST:'.$key .' => '. var_export( $val, true ) );
+    }
+
+    $register = new UKMCURL();
+    $register->post($cron);
+    $register->request('http://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
+
+    foreach( $register as $key => $val ) {
+        logg( 'CURL RESPONSE:'.$key .' => '. var_export( $val, true ) );
+    }
+    if( isset( $register->data ) && isset( $register->data->success ) && $register->data->success ) {
+        // SET READY FOR SECOND CONVERT / ARCHIVING
+        // a) converting (if status_final_convert not is complete)
+        // b) archive (if status_final_convert is complete)
+        // Script convert_final.cron will follow up on case a
+        // Script archive.cron will follow up on case b
+        if($cron['status_final_convert'] != 'complete') {
+            logg('NEXT STEP: converting (ready for final convert)');
+            ukmtv_update('status_progress', 'converting', $cron['id']);
+        } else {
+            logg('NEXT STEP: archive (this was final convert, ready to archive)');
+            ukmtv_update('status_progress', 'archive', $cron['id']);
+        }
+
+        unlink( $file_log_fp_hd );
+        unlink( $file_log_fp_mobile );
+        unlink( $file_log_sp_hd );
+        unlink( $file_log_sp_mobile );
+        unlink( $file_log_image );
+
+        unlink( $file_store_hd );
+        unlink( $file_store_mobile );
+        unlink( $file_store_image );
+
+        logg('CRON END');
+        // CONVERT-FILE WILL BE DELETED BY ARCHIVER
+    } else {
+        logg('FAILED to register with UKM-TV');
+        notify('FAILED to register with UKM-TV. Everything OK except this');
+    }
 }
-
-unlink( $file_log_fp_hd );
-unlink( $file_log_fp_mobile );
-unlink( $file_log_sp_hd );
-unlink( $file_log_sp_mobile );
-unlink( $file_log_image );
-
-unlink( $file_store_hd );
-unlink( $file_store_mobile );
-unlink( $file_store_image );
-
-logg('CRON END');
-// CONVERT-FILE WILL BE DELETED BY ARCHIVER
