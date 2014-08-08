@@ -213,12 +213,13 @@ require_once('../inc/functions.inc.php');
         
         logg('CONVERT '. $name);
         $timer_start = microtime(true);
+        logg(${'call_'.$varname});
         exec(${'call_'.$varname}, ${'response_'.$varname});
         logg('CONVERT '. $name .' RESPONSE: '. var_export( ${'response_'.$varname}, true));
         $timer_stop = microtime(true);
         logg('CONVERT '. $name .' TIME: '. ($timer_stop-$timer_start));
         
-        if( ${'response_'.$varname} != null ) {
+        if( !is_array(${'response_'.$varname}) ) {
             logg('FAILED! ERROR discovered, set status = "crashed" and move on');
             $ERROR = true;
         }
