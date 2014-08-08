@@ -73,11 +73,23 @@ $transfer = array('hd' => 'HD', 'mobile' => 'MOB', 'image' => 'IMG');
 
 foreach( $transfer as $varname => $name ) {
     logg($name .' FILE: Send to '. REMOTE_SERVER);
+    
+    // SIGN
+    $file_hash = hash_file('sha256', ${'file_store_'.$varname} );
+    $file_path = $cron['file_path'];
+    $timestamp = date();
+    
+    $msg = "file_path=$file_path&file_hash=$file_hash&timestamp=$timestamp";
+    $sign = hash_hmac('sha256', $msg, UKM_VIDEOSTORAGE_UPLOAD_KEY);
+
     $curl_request = new CurlFileUploader(${'file_store_'.$varname},								  // FILE TO SEND
     			    					 REMOTE_SERVER.'/receive.php',						      // SERVER TO RECEIVE (SCRIPT)
                                          'file',											      // NAME OF FILES-ARRAY
                                          array( 'file_name' => ${'file_name_output_'.$varname},	  // NAME TO BE STORED AS
-    			    				 			'file_path' => $cron['file_path']			      // PATH TO BE STORED AT
+    			    				 			'file_path' => $cron['file_path'],			      // PATH TO BE STORED AT
+    			    				 			'file_hash' => $file_hash,                        // HASH OF LOCAL FILE
+    			    				 			'sign'      => $sign                              // CONCAT SIGN OF ALL VALUES
+    			    				 			'timestamp' => $timestamp
                                               )
                                         );
     $response = $curl_request->UploadFile();
