@@ -112,7 +112,7 @@ require_once('../inc/functions.inc.php');
 		. '-passlogfile '.$file_x264.' '		# definerer hvor libx264 statfilen skal leses
 	
 		## AUDIO
-		. '-c:a libfaac '						# Bruk videocodec libfaac
+		. '-c:a libfdk_aac '						# Bruk videocodec libfdk_aac
 		. '-aq 100 '							# Audiokvalitet 100%
 		. '-ab '.AUDIO_BITRATE_HD.'k '			# Audio bitrate fra config
 		. '-ar '.AUDIO_SAMPLINGRATE_HD.' '		# Audio sampling rate (Hz) fra config
@@ -167,7 +167,7 @@ require_once('../inc/functions.inc.php');
 		. '-passlogfile '.$file_x264.' '		# definerer hvor libx264 statfilen skal leses
 	
 		## AUDIO
-		. '-c:a libfaac '						# Bruk videocodec libfaac
+		. '-c:a libfdk_aac '						# Bruk videocodec libfdk_aac
 		. '-aq 100 '							# Audiokvalitet 100%
 		. '-ab '.AUDIO_BITRATE_MOBILE.'k '		# Audio bitrate fra config
 		. '-ar '.AUDIO_SAMPLINGRATE_MOBILE.' '	# Audio sampling rate (Hz) fra config
