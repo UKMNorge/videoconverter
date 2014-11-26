@@ -122,6 +122,7 @@ if( $ERROR ) {
     notify('Files converted, but one or more not sent to server');
     ukmtv_update('status_progress', 'chrashed', $cron['id']);
 } else {
+    ukmtv_update('status_progress', 'transferred', $cron['id']);
     logg('NOTIFY UKM.no');
     logg('http://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
     foreach( $cron as $key => $val ) {
