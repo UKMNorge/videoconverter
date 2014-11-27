@@ -126,5 +126,11 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 	$data_object->cron_id = $CRON_ID;
 	$data->files[0] = $data_object;
 	$data->success = true;
+	
+	require_once('inc/curl.class.php');
+	$store = new UKMCURL();
+	$store->timeout(2);
+	$store->request('http://videoconverter. ' . UKM_HOSTNAME . '/cron/convert_first.cron.php');
+
 	die(json_encode($data));
 ?>

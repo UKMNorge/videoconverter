@@ -1,4 +1,6 @@
 <?php
+// SCRIPT WILL FINISH IF USER LEAVES THE PAGE
+ignore_user_abort(true);
 
 require_once('UKMconfig.inc.php');
 require_once('../inc/config.inc.php');

@@ -1,4 +1,6 @@
 <?php
+// SCRIPT WILL FINISH IF USER LEAVES THE PAGE
+ignore_user_abort(true);
 
 require_once('UKMconfig.inc.php');
 require_once('../inc/config.inc.php');
@@ -27,3 +29,9 @@ $res = mysql_query( $sql );
 $cron = mysql_fetch_assoc( $res );
 
 require_once('../inc/convert.inc.php');
+
+// Initiate final convert if possible (script will determine whether to process or not)
+require_once('../inc/curl.class.php');
+$store = new UKMCURL();
+$store->timeout(2);
+$store->request('http://videoconverter. ' . UKM_HOSTNAME . '/cron/convert_final.cron.php');
