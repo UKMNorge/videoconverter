@@ -20,7 +20,7 @@ if( mysql_num_rows( $testres ) > 0 )
 $sql = "SELECT * FROM `ukmtv`
         WHERE `status_progress` = 'archive'
         AND `status_archive` = 'complete'
-        ORDER BY `id` ASC
+        ORDER BY `id` DESC
         LIMIT 1";
 
 $res = mysql_query( $sql );
