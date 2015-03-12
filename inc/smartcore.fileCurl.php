@@ -37,6 +37,7 @@ class CurlFileUploader {
 	*/
 	function UploadFile ($port=false) {
    		$ch = curl_init();
+                curl_setopt($this->curl, CURLOPT_USERAGENT, "UKMNorge API");
    		curl_setopt($ch, CURLOPT_URL, $this->uploadURL );
    		curl_setopt($ch, CURLOPT_POST, 1 );
 		if($port !== false) curl_setopt($ch, CURLOPT_PORT, $port);
