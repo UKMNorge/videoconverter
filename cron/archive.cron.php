@@ -38,12 +38,30 @@ logg('START');
 // b) archive (if status_final_convert is complete)
 // Script convert_final.cron will follow up on case a
 // Script archive.cron will follow up on case b
-ukmtv_update('status_progress', 'transferring', $cron['id']);
+#ukmtv_update('status_progress', 'transferring', $cron['id']);
 
 ini_set('display_errors', true);
 require_once('../inc/smartcore.fileCurl.php');
 require_once('../inc/curl.class.php');
 require_once('../inc/config_vars.inc.php');
+
+logg('FETCH METADATA from api.ukm.no');
+
+// Initiate final convert if possible (script will determine whether to process or not)
+require_once('../inc/curl.class.php');
+$store = new UKMCURL();
+$store->timeout(8);
+#$apiAnswer = $store->request('http://api. ' . UKM_HOSTNAME . '/video:info/'. CRON_ID);
+$apiAnswer = $store->request('http://api. ' . UKM_HOSTNAME . '/?API=video&CALL=info&ID='. CRON_ID);
+
+logg('FETCH METADATA - write to file');
+$fileHandle = fopen( DIR_TEMP_STORE . $file_name_output_archive .'.metadata.txt', 'w');
+writeMetaData($fileHandle, $apiAnswer );
+fclose( $fileHandle );
+logg('FETCH METADATA - file written');
+
+var_dump( $apiAnswer );
+die();
 
 $transfer = array('archive' => 'Arkiv','image' => 'IMG');
 
@@ -72,4 +90,19 @@ if( $ERROR ) {
     unlink( $file_store_archive );
 	logg('CRON END');
     // TODO: CONVERT-FILE WILL BE DELETED BY ARCHIVER
+}
+
+/////////////////////////// FUNCTIONS ///////////////////////////
+
+function writeMetaData($fileHandle, $object, $indent=0 ) {
+	if( is_object( $object ) or is_array( $object ) ) {
+		foreach( $object as $key => $value ) {
+			if( is_object( $value ) or is_array( $value ) ) {
+				echo str_repeat(' &nbsp; ', $indent) . strtoupper( $key ) . ': <br />';
+				printData($fileHandle, $value, ($indent+1) );
+			} else {
+				echo str_repeat(' &nbsp; ', $indent) . ucfirst( $key ) .': '. $value .'<br />';
+			}
+		}
+	}
 }
