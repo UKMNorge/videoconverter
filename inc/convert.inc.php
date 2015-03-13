@@ -57,6 +57,7 @@ $call_hd =
     . '-y '                                 # overskriv fil uten å spørre
     . '-i '.$file_input.' '                 # Input-fil
     . '-threads 0 '                         # Antall tråder, 0 kan utnytte alle
+	. '-movflags faststart '				# Istedenfor qtfaststart
     . '-g 75 '                              # Antall tråder, 0 kan utnytte alle
     . '-keyint_min 50 '                     # Antall tråder, 0 kan utnytte alle
 
@@ -78,6 +79,7 @@ $call_hd =
     . '-y '                                 # overskriv fil uten å spørre
     . '-i '. $file_input.' '                # Input-fil
     . '-threads 0 '                         # Antall tråder, 0 kan utnytte alle
+	. '-movflags faststart '				# Istedenfor qtfaststart
     . '-g 75 '                              # GOP-interval (keyframe interval)
     . '-keyint_min 50 '                     # Minimum GOP interval
 
@@ -97,12 +99,12 @@ $call_hd =
     . '-b:a '.AUDIO_BITRATE_HD.'k '         # Audio bitrate fra config
     . '-ar '.AUDIO_SAMPLINGRATE_HD.' '      # Audio sampling rate (Hz) fra config
     . '-s '. $video_resolution_hd.' '       # Videooppløsning
-    . '-f mp4 '. $file_output_hd .' 2> '    # Output MP4-fil (tving dette..?)
-        . $file_log_sp_hd.' '               # Angi logfil for ffmpeg
+    . '-f mp4 '. $file_store_hd .' 2> '    # Output MP4-fil (tving dette..?)
+        . $file_log_sp_hd.' ';               # Angi logfil for ffmpeg
 
     ####### QT FASTSTART #######
-    . '&& qt-faststart '.$file_output_hd
-    . ' ' . $file_store_hd;                 # Kjør QT Faststart og flytt til lagringsmappe (klar for henting)
+    #. '&& qt-faststart '.$file_output_hd
+    #. ' ' . $file_store_hd;                 # Kjør QT Faststart og flytt til lagringsmappe (klar for henting)
 
 
 $call_mobile =
@@ -111,6 +113,7 @@ $call_mobile =
     . '-y '                                 # overskriv fil uten å spørre
     . '-i '.$file_input.' '                 # Input-fil
     . '-threads 0 '                         # Antall tråder, 0 kan utnytte alle
+	. '-movflags faststart '				# Istedenfor qtfaststart
     . '-g 75 '                              # Antall tråder, 0 kan utnytte alle
     . '-keyint_min 50 '                     # Antall tråder, 0 kan utnytte alle
 
@@ -133,6 +136,7 @@ $call_mobile =
     . '-y '                                 # overskriv fil uten å spørre
     . '-i '. $file_input.' '                # Input-fil
     . '-threads 0 '                         # Antall tråder, 0 kan utnytte alle
+	. '-movflags faststart '				# Istedenfor qtfaststart
     . '-g 75 '                              # GOP-interval (keyframe interval)
     . '-keyint_min 50 '                     # Minimum GOP interval
 
@@ -153,12 +157,12 @@ $call_mobile =
     . '-b:a '.AUDIO_BITRATE_MOBILE.'k '     # Audio bitrate fra config
     . '-ar '.AUDIO_SAMPLINGRATE_MOBILE.' '  # Audio sampling rate (Hz) fra config
     . '-s '. $video_resolution_mobile.' '   # Videooppløsning
-    . '-f mp4 '. $file_output_mobile .' 2> '# Output MP4-fil (tving dette..?)
-        . $file_log_sp_mobile.' '           # Angi logfil for ffmpeg
+    . '-f mp4 '. $file_store_mobile .' 2> '# Output MP4-fil (tving dette..?)
+        . $file_log_sp_mobile.' ';           # Angi logfil for ffmpeg
 
     ####### QT FASTSTART #######
-    . '&& qt-faststart '.$file_output_mobile
-    . ' ' . $file_store_mobile;             # Kjør QT Faststart og flytt til lagringsmappe (klar for henting)
+    #. '&& qt-faststart '.$file_output_mobile
+    #. ' ' . $file_store_mobile;             # Kjør QT Faststart og flytt til lagringsmappe (klar for henting)
 
 $call_archive =
     ####### FIRST PASS #######
@@ -166,6 +170,7 @@ $call_archive =
     . '-y '                                 # overskriv fil uten å spørre
     . '-i '.$file_input.' '                 # Input-fil
     . '-threads 0 '                         # Antall tråder, 0 kan utnytte alle
+	. '-movflags faststart '				# Istedenfor qtfaststart
     . '-g 75 '                              # Antall tråder, 0 kan utnytte alle
     . '-keyint_min 50 '                     # Antall tråder, 0 kan utnytte alle
 
@@ -187,6 +192,7 @@ $call_archive =
     . '-y '                                 # overskriv fil uten å spørre
     . '-i '. $file_input.' '                # Input-fil
     . '-threads 0 '                         # Antall tråder, 0 kan utnytte alle
+	. '-movflags faststart '				# Istedenfor qtfaststart
     . '-g 75 '                              # GOP-interval (keyframe interval)
     . '-keyint_min 50 '                     # Minimum GOP interval
 
@@ -206,12 +212,12 @@ $call_archive =
     . '-b:a '.AUDIO_BITRATE_ARCHIVE.'k '    # Audio bitrate fra config
     . '-ar '.AUDIO_SAMPLINGRATE_ARCHIVE.' ' # Audio sampling rate (Hz) fra config
     . '-s '. $video_resolution_archive.' '  # Videooppløsning
-    . '-f mp4 '. $file_output_archive .' 2> '# Output MP4-fil (tving dette..?)
-        . $file_log_sp_archive.' '          # Angi logfil for ffmpeg
+    . '-f mp4 '. $file_store_archive .' 2> '# Output MP4-fil (tving dette..?)
+        . $file_log_sp_archive.' ';          # Angi logfil for ffmpeg
 
     ####### QT FASTSTART #######
-    . '&& qt-faststart '.$file_output_archive
-    . ' ' . $file_store_archive;            # Kjør QT Faststart og flytt til lagringsmappe (klar for henting)
+    #. '&& qt-faststart '.$file_output_archive
+    #. ' ' . $file_store_archive;            # Kjør QT Faststart og flytt til lagringsmappe (klar for henting)
 
 
 $call_image =
