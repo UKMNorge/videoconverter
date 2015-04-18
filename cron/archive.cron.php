@@ -20,6 +20,7 @@ if( mysql_num_rows( $testres ) > 0 )
 $sql = "SELECT * FROM `ukmtv`
         WHERE `status_progress` = 'archive'
         AND `status_archive` = 'complete'
+        AND `id` > 10000
         ORDER BY `id` DESC
         LIMIT 1";
 
@@ -51,46 +52,37 @@ logg('FETCH METADATA from api.ukm.no');
 require_once('../inc/curl.class.php');
 $store = new UKMCURL();
 $store->timeout(8);
-#$apiAnswer = $store->request('http://api. ' . UKM_HOSTNAME . '/video:info/'. CRON_ID);
-$apiAnswer = $store->request('http://api. ' . UKM_HOSTNAME . '/?API=video&CALL=info&ID='. CRON_ID);
+$apiAnswer = $store->request('http://api.' . UKM_HOSTNAME . '/video:info/'. CRON_ID);
 
-logg('FETCH METADATA - write to file');
-$fileHandle = fopen( DIR_TEMP_STORE . $file_name_output_archive .'.metadata.txt', 'w');
+$ARCHIVE_DIR = DIR_FINAL_ARCHIVE . $apiAnswer->path->dir;
+logg('CREATE ARCHIVE DIR: '. $ARCHIVE_DIR );
+if( !file_exists( $ARCHIVE_DIR ) ) {
+	mkdir( $ARCHIVE_DIR, 0777, true);
+}
+
+logg('Write metadata to file');
+$metadatafile = $ARCHIVE_DIR . $apiAnswer->path->filename.'.metadata.txt';
+
+@unlink( $metadatafile );
+$fileHandle = fopen( $metadatafile, 'w');
 writeMetaData($fileHandle, $apiAnswer );
 fclose( $fileHandle );
-logg('FETCH METADATA - file written');
+logg('Metadata written');
 
-var_dump( $apiAnswer );
-die();
+logg('ARCHIVE FILE: Send video to archive folder');
+copy( $file_store_archive, $ARCHIVE_DIR . $apiAnswer->path->filename.'.mp4');
 
-$transfer = array('archive' => 'Arkiv','image' => 'IMG');
+logg('ARCHIVE FILE: Send image to archive folder');
+copy( $file_store_image, $ARCHIVE_DIR . $apiAnswer->path->filename.'.jpg');
 
-$ERROR = false;
-foreach( $transfer as $varname => $name ) {
-    if( $ERROR ) {
-        break;
-    }
-    logg($name .' FILE: Send to archive folder');
-    // BURDE VÆRE ET SKIKKELIG NAVN, I EN MENNESKELIG LESBAR STRUKTUR
-    // KOMMUNISER MED UKM-TV
-    // LAGRE EXIF-DATA
-    $storage_filename = DIR_FINAL_ARCHIVE . ${'file_name_output_'.$varname};
-    copy( ${'file_store_'.$varname}, $storage_filename);
-}
+logg('Update DB');
+ukmtv_update('status_progress', 'complete', $cron['id']);
+unlink( $file_log_fp_archive );
+unlink( $file_log_sp_archive );
+unlink( $file_log_image );
+unlink( $file_store_archive );
+logg('CRON END');
 
-if( $ERROR ) {
-    logg('FAILED TO STORE');
-    notify('Files converted, but one or more not sent to archive server');
-    ukmtv_update('status_progress', 'chrashed', $cron['id']);
-} else {
-    ukmtv_update('status_progress', 'complete', $cron['id']);
-    unlink( $file_log_fp_archive );
-    unlink( $file_log_sp_archive );
-    unlink( $file_log_image );
-    unlink( $file_store_archive );
-	logg('CRON END');
-    // TODO: CONVERT-FILE WILL BE DELETED BY ARCHIVER
-}
 
 /////////////////////////// FUNCTIONS ///////////////////////////
 
@@ -99,9 +91,11 @@ function writeMetaData($fileHandle, $object, $indent=0 ) {
 		foreach( $object as $key => $value ) {
 			if( is_object( $value ) or is_array( $value ) ) {
 				echo str_repeat(' &nbsp; ', $indent) . strtoupper( $key ) . ': <br />';
-				printData($fileHandle, $value, ($indent+1) );
+				fwrite( $fileHandle, str_repeat(' ', $indent) . strtoupper( $key ) . ': ' ."\r\n");
+				writeMetaData($fileHandle, $value, ($indent+1) );
 			} else {
 				echo str_repeat(' &nbsp; ', $indent) . ucfirst( $key ) .': '. $value .'<br />';
+				fwrite( $fileHandle, str_repeat(' ', $indent) . ucfirst( $key ) .': '. $value  ."\r\n" );
 			}
 		}
 	}

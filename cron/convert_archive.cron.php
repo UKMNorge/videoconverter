@@ -40,6 +40,7 @@ if( mysql_num_rows( $test ) > 0 )
 $sql = "SELECT * FROM `ukmtv`
 		WHERE `status_progress` = 'archive'
 		AND `status_final_convert` = 'complete'
+		AND (`status_archive` IS NULL OR `status_archive` = 'convert')
 		ORDER BY `id` ASC
 		LIMIT 1";
 $res = mysql_query( $sql );

@@ -300,12 +300,16 @@ if( $ERROR ) {
     unlink($file_x264.'-0.log');
     unlink($file_x264.'-0.log.mbtree');
 
-    // Trigger transfer of file to storage server
-    echo '<h1>Triggering start of store-cron</h1>';
-    echo 'Cron will self make sure only one file is transferred';
-
-    require_once('../inc/curl.class.php');
-    $store = new UKMCURL();
-    $store->timeout(2);
-    $store->request('http://videoconverter. ' . UKM_HOSTNAME . '/cron/store.cron.php');
+	if( CONVERT_PASS == 'archive' ) {
+		echo 'Archive-files created';
+	} else {
+	    // Trigger transfer of file to storage server
+	    echo '<h1>Triggering start of store-cron</h1>';
+	    echo 'Cron will self make sure only one file is transferred';
+	
+	    require_once('../inc/curl.class.php');
+	    $store = new UKMCURL();
+	    $store->timeout(2);
+	    $store->request('http://videoconverter. ' . UKM_HOSTNAME . '/cron/store.cron.php');
+	}
 }
