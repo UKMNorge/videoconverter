@@ -27,6 +27,14 @@ $test = mysql_query( $test );
 if( mysql_num_rows( $test ) > 0 )
 	die('First-convert jobs to be done. Taking a nap');
 
+// If final-passes still queued, take a nap
+$test = "SELECT `id` FROM `ukmtv`
+		 WHERE `status_final_convert` != 'complete'
+		 AND `status_progress` = 'converting'";
+$test = mysql_query( $test );
+if( mysql_num_rows( $test ) > 0 )
+	die('Final-convert jobs to be done. Taking a nap');
+
 // FIND NEXT JOB
 $sql = "SELECT * FROM `ukmtv`
 		WHERE `status_progress` = 'archive'
