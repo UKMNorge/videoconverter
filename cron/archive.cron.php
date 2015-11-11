@@ -72,6 +72,8 @@ foreach( $transfer as $varname => $name ) {
     // KOMMUNISER MED UKM-TV
     // LAGRE EXIF-DATA
     $storage_filename = DIR_FINAL_ARCHIVE . ${'file_name_output_'.$varname};
+    logg($name .' FRA: '. ${'file_store_'.$varname});
+    logg($name .' TIL: '. $storage_filename);
     copy( ${'file_store_'.$varname}, $storage_filename);
 }
 
