@@ -99,7 +99,7 @@ function writeMetaData($fileHandle, $object, $indent=0 ) {
 		foreach( $object as $key => $value ) {
 			if( is_object( $value ) or is_array( $value ) ) {
 				echo str_repeat(' &nbsp; ', $indent) . strtoupper( $key ) . ': <br />';
-				printData($fileHandle, $value, ($indent+1) );
+				writeMetaData($fileHandle, $value, ($indent+1) );
 			} else {
 				echo str_repeat(' &nbsp; ', $indent) . ucfirst( $key ) .': '. $value .'<br />';
 			}
