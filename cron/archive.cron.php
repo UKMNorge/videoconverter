@@ -68,7 +68,7 @@ mkdir( DIR_FINAL_ARCHIVE . $lesbar_path, 0755, true);
 logg('FETCH METADATA - write to file');
 $filnavn_metadata =  $filnavn_lagre.'.metadata.txt';
 logg('METADATA FILENAME: '. $filnavn_metadata );
-$fileHandle = fopen( $file_name_metadata, 'w');
+$fileHandle = fopen($filnavn_metadata, 'w');
 fwrite( $fileHandle, writeMetaData($fileHandle, $apiAnswer ) );
 fclose( $fileHandle );
 logg('FETCH METADATA - file written');
