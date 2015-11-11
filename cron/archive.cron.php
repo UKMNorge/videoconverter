@@ -51,17 +51,14 @@ logg('FETCH METADATA from api.ukm.no');
 require_once('../inc/curl.class.php');
 $store = new UKMCURL();
 $store->timeout(8);
-#$apiAnswer = $store->request('http://api.' . UKM_HOSTNAME . '/video:info/'. CRON_ID);
-$apiAnswer = $store->request('http://api.' . UKM_HOSTNAME . '/?API=video&CALL=info&ID='. CRON_ID);
+$apiAnswer = $store->request('http://api.' . UKM_HOSTNAME . '/video:info/'. CRON_ID);
+#$apiAnswer = $store->request('http://api.' . UKM_HOSTNAME . '/?API=video&CALL=info&ID='. CRON_ID);
 
 logg('FETCH METADATA - write to file');
 $fileHandle = fopen( DIR_TEMP_STORE . $file_name_output_archive .'.metadata.txt', 'w');
 writeMetaData($fileHandle, $apiAnswer );
 fclose( $fileHandle );
 logg('FETCH METADATA - file written');
-
-var_dump( $apiAnswer );
-die();
 
 $transfer = array('archive' => 'Arkiv','image' => 'IMG');
 
