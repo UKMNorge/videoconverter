@@ -69,7 +69,7 @@ logg('FETCH METADATA - write to file');
 $filnavn_metadata =  $filnavn_lagre.'.metadata.txt';
 logg('METADATA FILENAME: '. $filnavn_metadata );
 $fileHandle = fopen( $file_name_metadata, 'w');
-fwrite( writeMetaData($fileHandle, $apiAnswer ) );
+fwrite( $fileHandle, writeMetaData($fileHandle, $apiAnswer ) );
 fclose( $fileHandle );
 logg('FETCH METADATA - file written');
 
