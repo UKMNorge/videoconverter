@@ -259,11 +259,13 @@ foreach( $create as $varname => $name ) {
     logg(${'call_'.$varname});
     $call_return_code = null;
     exec(${'call_'.$varname}, ${'response_'.$varname}, $call_return_code);
+	logg('CONVERT '. $name .' RETURN CODE: '. $call_return_code );
     logg('CONVERT '. $name .' RESPONSE: '. var_export( ${'response_'.$varname}, true));
     $timer_stop = microtime(true);
     logg('CONVERT '. $name .' TIME: '. ($timer_stop-$timer_start));
 
     if( $call_return_code != 0 ) {
+	    logg('CALL_RETURN_CODE: '. var_export( $call_return_code, true ) );
         logg('FAILED! ERROR discovered, set status = "crashed" and move on');
         $ERROR = true;
     }
@@ -276,6 +278,7 @@ if( $ERROR ) {
     logg('CONVERT COMPLETE');
     // UPDATE DATABASE - WE'RE NOW CONVERTED
     ukmtv_update($dbfield, 'complete', $cron['id']);
+    # if archive, $dbfield = status_archive
 
     if( CONVERT_PASS == 'archive' ) {
 	    ukmtv_update('status_progress', 'archive', $cron['id']);
@@ -292,7 +295,7 @@ if( $ERROR ) {
     // Slett converted-filene ( bevarer convert + store-filene)
     // Store vil slette de to siste + logger
     if( CONVERT_PASS == 'archive' ) {
-		unlink( $file_output_archive );    
+		#unlink( $file_output_archive );    // Brukes ikke da vi ikke lengre benytter QT Faststart
     } else {
 	    unlink($file_output_hd);
 	    unlink($file_output_mobile);

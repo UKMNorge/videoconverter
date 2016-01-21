@@ -62,7 +62,9 @@ $filnavn_lagre = DIR_FINAL_ARCHIVE . $lesbar_path . $lesbar_filnavn;
 
 logg('FILE PATH'. $filnavn_lagre );
 // OPPRETT LAGRINGSMAPPER
-mkdir( DIR_FINAL_ARCHIVE . $lesbar_path, 0755, true);
+if( !is_dir( DIR_FINAL_ARCHIVE . $lesbar_path ) ) {
+	mkdir( DIR_FINAL_ARCHIVE . $lesbar_path, 0755, true);
+}
 
 
 logg('FETCH METADATA - write to file');
