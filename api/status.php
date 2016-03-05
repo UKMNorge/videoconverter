@@ -27,13 +27,13 @@ $sql = "SELECT COUNT(`id`) AS `count`
 		FROM `ukmtv`
 		WHERE `status_progress` = 'converting'
 		AND `status_first_convert` = 'complete'";
-$info->queue->first_convert = queue_count( $sql );
+$info->queue->final_convert = queue_count( $sql );
 
 // ANTALL ARCHIVE-CONVERT I KØ
 $sql = "SELECT COUNT(`id`) AS `count`
 		FROM `ukmtv`
 		WHERE `status_progress` = 'archive'
 		AND `status_final_convert` = 'complete'";
-$info->queue->first_convert = queue_count( $sql );
+$info->queue->archive_convert = queue_count( $sql );
 
 die(json_encode($info));
