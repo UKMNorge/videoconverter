@@ -28,7 +28,8 @@ $info->time->first_convert = $info->queue->first_convert * 5; // Estimated 5 min
 $sql = "SELECT COUNT(`id`) AS `count`
 		FROM `ukmtv`
 		WHERE `status_progress` = 'converting'
-		AND `status_first_convert` = 'complete'";
+		AND `status_first_convert` = 'complete'
+		AND `status_final_convert` IS NULL";
 $info->queue->final_convert = queue_count( $sql );
 $info->time->final_convert = $info->queue->final_convert * 10; // Estimated 10 min
 
@@ -36,7 +37,7 @@ $info->time->final_convert = $info->queue->final_convert * 10; // Estimated 10 m
 $sql = "SELECT COUNT(`id`) AS `count`
 		FROM `ukmtv`
 		WHERE `status_progress` = 'archive'
-		AND `status_final_convert` = 'complete'";
+		AND (`status_archive` IS NULL OR `status_archive` = 'convert')";
 $info->queue->archive_convert = queue_count( $sql );
 $info->time->archive_convert = $info->queue->archive_convert * 25; // Estimated 25 min
 

@@ -41,12 +41,6 @@ $sql = "SELECT * FROM `ukmtv`
 		AND (`status_archive` IS NULL OR `status_archive` = 'convert')
 		ORDER BY `id` ASC
 		LIMIT 1";
-// 2016 - REVERSE ORDER WHILE CATCHING UP
-$sql = "SELECT * FROM `ukmtv`
-		WHERE `status_progress` = 'archive'
-		AND (`status_archive` IS NULL OR `status_archive` = 'convert')
-		ORDER BY `id` DESC
-		LIMIT 1";
 
 $res = mysql_query( $sql );
 $cron = mysql_fetch_assoc( $res );
