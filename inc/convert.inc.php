@@ -17,6 +17,8 @@ if( !$cron )
 require_once('../inc/config.inc.php');
 require_once('../inc/functions.inc.php');
 
+define('CRON_ID', $cron['id']);
+define('LOG_SCRIPT_NAME', 'CONVERT.INC.PHP');
 
 ####################################################################################
 ## EXECUTE CRON CONVERT (JOB IS SELECTED)
@@ -32,6 +34,10 @@ $file_x264              = DIR_TEMP_x264 . $file_name_output_raw .'_x264data.txt'
 // VIDEO ASPECT RATIO
 $video_width_raw        = $cron['file_width'];
 $video_height_raw       = $cron['file_height'];
+if( empty( $video_width_raw ) || empty( $video_height_raw ) ) {
+	notify('MANGLER VIDEOSTØRRELSER, KONVERTERING STOPPET');
+	die();
+}
 $video_ratio            = $video_width_raw / $video_height_raw;
 $video_width_hd         = round( $video_ratio * 720 );
 $video_width_mobile     = round( $video_ratio * 480 );
@@ -236,9 +242,7 @@ $call_image =
     . $file_log_image                       # Logg-fil
     ;
 
-
-define('CRON_ID', $cron['id']);
-define('LOG_SCRIPT_NAME', 'CONVERT.INC.PHP');
+	
 logg('START');
 logg('CONVERT PASS: '. CONVERT_PASS);
 
