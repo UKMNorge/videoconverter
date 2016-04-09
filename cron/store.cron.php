@@ -95,7 +95,7 @@ foreach( $transfer as $varname => $name ) {
 if( $ERROR ) {
     logg('FAILED TO STORE');
     notify('Files converted, but one or more not sent to server');
-    ukmtv_update('status_progress', 'chrashed', $cron['id']);
+    ukmtv_update('status_progress', 'crashed', $cron['id']);
 } else {
     ukmtv_update('status_progress', 'transferred', $cron['id']);
     logg('NOTIFY UKM.no');
