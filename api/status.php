@@ -14,6 +14,7 @@ function queue_count( $sql ) {
 
 $info = new stdClass;
 $info->queue = new stdClass;
+$info->time = new stdClass;
 $info->diskspace = diskfreespace("/");
 $info->total_diskspace = disk_total_space("/");
 
