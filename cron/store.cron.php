@@ -29,6 +29,7 @@ if(!$cron)
 
 define('LOG_SCRIPT_NAME', 'VIDEO STORAGE');
 define('CRON_ID', $cron['id']);
+ini_set("error_log", DIR_LOG . 'cron_'. CRON_ID .'.log');
 logg('START');
 
 // Settings status to transferring
@@ -106,6 +107,12 @@ if( $ERROR ) {
 
     $register = new UKMCURL();
     $register->post($cron);
+    // SQLins kan ta tid mens serveren tar backup. La den få litt tid på natta
+    if( date('G') < 5 ) {
+		$register->timeout(20);
+	} else {
+	    $register->timeout(10);
+	}
     $register->request('http://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
 
     foreach( $register as $key => $val ) {

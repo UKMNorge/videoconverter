@@ -30,6 +30,8 @@ if(!$cron)
 
 define('LOG_SCRIPT_NAME', 'VIDEO ARCHIVE STORAGE');
 define('CRON_ID', $cron['id']);
+ini_set("error_log", DIR_LOG . 'cron_'. CRON_ID .'.log');
+
 logg('START');
 
 // Settings status to transferring

@@ -19,6 +19,8 @@ require_once('../inc/functions.inc.php');
 
 define('CRON_ID', $cron['id']);
 define('LOG_SCRIPT_NAME', 'CONVERT.INC.PHP');
+ini_set("error_log", DIR_LOG . 'cron_'. CRON_ID .'.log');
+
 
 ####################################################################################
 ## EXECUTE CRON CONVERT (JOB IS SELECTED)
@@ -36,6 +38,7 @@ $video_width_raw        = $cron['file_width'];
 $video_height_raw       = $cron['file_height'];
 if( empty( $video_width_raw ) || empty( $video_height_raw ) ) {
 	notify('MANGLER VIDEOSTØRRELSER, KONVERTERING STOPPET');
+	ukmtv_update('status_progress', 'crashed', $cron['id']);
 	die();
 }
 $video_ratio            = $video_width_raw / $video_height_raw;

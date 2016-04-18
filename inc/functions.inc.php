@@ -6,10 +6,6 @@ function ukmtv_update($field, $status, $id) {
 }
 
 function logg( $message ) {
-	$file_name = DIR_LOG . 'cron_'. CRON_ID .'.log';
-	$file_handle = fopen( $file_name, 'a');
-	fwrite( $file_handle, "\r\n" . date('d.m H:i') .': '. $message );
-	fclose( $file_handle );
     error_log(LOG_SCRIPT_NAME .' '. CRON_ID .': '. $message );
 } 
 
