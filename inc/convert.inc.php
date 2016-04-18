@@ -273,7 +273,7 @@ foreach( $create as $varname => $name ) {
 
     if( $call_return_code != 0 ) {
 	    logg('CALL_RETURN_CODE: '. var_export( $call_return_code, true ) );
-        logg('FAILED! ERROR discovered, set status = "crashed" and move on');
+        notify('FAILED! ERROR discovered, set status = "crashed" and move on');
         $ERROR = true;
     }
 }
