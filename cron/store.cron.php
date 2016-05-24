@@ -3,6 +3,10 @@
 // CONVERT.INC.PHP TRIGGERS THIS CRON BY CURL(timeout: 2)
 ignore_user_abort(true);
 
+# Lagt til 15. mai 2016 for å overføre avslutningsshow UKM Oslo 2016 - stor fil
+ini_set('max_execution_time', 50);
+
+
 require_once('UKMconfig.inc.php');
 require_once('../inc/config.inc.php');
 require_once('../inc/functions.inc.php');
@@ -108,10 +112,11 @@ if( $ERROR ) {
     $register = new UKMCURL();
     $register->post($cron);
     // SQLins kan ta tid mens serveren tar backup. La den få litt tid på natta
+    // SQLins er meget treg for tiden. M�å optimaliseres, men midlertidig kan videostorage være tålmodig
     if( date('G') < 5 ) {
-		$register->timeout(20);
+		$register->timeout(30);
 	} else {
-	    $register->timeout(10);
+	    $register->timeout(20);
 	}
     $register->request('http://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
 
