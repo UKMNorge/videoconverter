@@ -100,8 +100,10 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 	$file_uploaded = DIR_TEMP_UPLOAD.$data_object->name;
 	$probe_width = "ffprobe -show_streams '$file_uploaded' 2>&1 | grep ^width | sed s/width=//";
 	$probe_height = "ffprobe -show_streams '$file_uploaded' 2>&1 | grep ^height | sed s/height=//";
+	$probe_duration = "ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 '$file_uploaded'";
 	$file_width = exec($probe_width);
 	$file_height = exec($probe_height);
+	$file_duration = (int) exec($probe_duration);
 	###################################################
 	## MOVE FILE TO CONVERT-DIRECTORY
 	rename($file_uploaded, DIR_TEMP_CONVERT.$file_name);
@@ -116,6 +118,7 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 				`file_type` 	= '$file_ext',
 				`file_width` 	= '$file_width',
 				`file_height` 	= '$file_height',
+				`file_duration` = '$file_duration',
 				`status_progress`='registered'
 			WHERE
 				`id` = '". $CRON_ID ."' LIMIT 1";

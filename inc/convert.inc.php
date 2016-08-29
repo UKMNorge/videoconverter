@@ -30,6 +30,7 @@ require_once('../inc/config_vars.inc.php');
 $file_x264              = DIR_TEMP_x264 . $file_name_output_raw .'_x264data.txt';
 
 // VIDEO ASPECT RATIO
+$video_duration         = (int) $cron['file_duration'];
 $video_width_raw        = $cron['file_width'];
 $video_height_raw       = $cron['file_height'];
 $video_ratio            = $video_width_raw / $video_height_raw;
@@ -167,73 +168,81 @@ $call_mobile =
 $call_archive =
     ####### FIRST PASS #######
     'ffmpeg '
-    . '-y '                                 # overskriv fil uten å spørre
-    . '-i '.$file_input.' '                 # Input-fil
-    . '-threads 0 '                         # Antall tråder, 0 kan utnytte alle
-	. '-movflags faststart '				# Istedenfor qtfaststart
-    . '-g 75 '                              # Antall tråder, 0 kan utnytte alle
-    . '-keyint_min 50 '                     # Antall tråder, 0 kan utnytte alle
+    . '-y '                                  # overskriv fil uten å spørre
+    . '-i '.$file_input.' '                  # Input-fil
+    . '-threads 0 '                          # Antall tråder, 0 kan utnytte alle
+	. '-movflags faststart '                 # Istedenfor qtfaststart
+    . '-g 75 '                               # Antall tråder, 0 kan utnytte alle
+    . '-keyint_min 50 '                      # Antall tråder, 0 kan utnytte alle
 
     ## VIDEO
     . '-bt '.(VIDEO_BITRATE_ARCHIVE*1.5).'k '# +/- target bitrate
-    . '-b:v '.VIDEO_BITRATE_ARCHIVE.'k '    # Target bitrate basert på UKM-tabell
-    . '-c:v libx264 '                       # Bruk videocodec libx264
-    . '-preset ' .$preset .' '              # Mest detaljerte preset (placebo er ikke verdt forskjellen)
-    . '-r 25 '                              # Tvinger 25fps
-    . '-pass 1 '                            # Kjør first-pass
-    . '-passlogfile '.$file_x264.' '        # definerer hvor libx264 statfilen skal lagres
-    . '-an '                                # Drop audio, spar tid
-    . '-s '. $video_resolution_archive.' '  # Videooppløsning
-    . '-f mp4 /dev/null '                   # Output MP4-fil til ingenting da vi ikke skal bruke denne
-    . '2> '. $file_log_fp_archive.' '       # Angi logfil for ffmpeg
+    . '-b:v '.VIDEO_BITRATE_ARCHIVE.'k '     # Target bitrate basert på UKM-tabell
+    . '-c:v libx264 '                        # Bruk videocodec libx264
+    . '-preset ' .$preset .' '               # Mest detaljerte preset (placebo er ikke verdt forskjellen)
+    . '-r 25 '                               # Tvinger 25fps
+    . '-pass 1 '                             # Kjør first-pass
+    . '-passlogfile '.$file_x264.' '         # definerer hvor libx264 statfilen skal lagres
+    . '-an '                                 # Drop audio, spar tid
+    . '-s '. $video_resolution_archive.' '   # Videooppløsning
+    . '-f mp4 /dev/null '                    # Output MP4-fil til ingenting da vi ikke skal bruke denne
+    . '2> '. $file_log_fp_archive.' '        # Angi logfil for ffmpeg
 
     ####### SECOND PASS #######
-    .'&& ffmpeg '                           # Kjør 2-pass hvis 1-pass == success
-    . '-y '                                 # overskriv fil uten å spørre
-    . '-i '. $file_input.' '                # Input-fil
-    . '-threads 0 '                         # Antall tråder, 0 kan utnytte alle
-	. '-movflags faststart '				# Istedenfor qtfaststart
-    . '-g 75 '                              # GOP-interval (keyframe interval)
-    . '-keyint_min 50 '                     # Minimum GOP interval
+    .'&& ffmpeg '                            # Kjør 2-pass hvis 1-pass == success
+    . '-y '                                  # overskriv fil uten å spørre
+    . '-i '. $file_input.' '                 # Input-fil
+    . '-threads 0 '                          # Antall tråder, 0 kan utnytte alle
+	. '-movflags faststart '                 # Istedenfor qtfaststart
+    . '-g 75 '                               # GOP-interval (keyframe interval)
+    . '-keyint_min 50 '                      # Minimum GOP interval
 
     ## VIDEO
     . '-bt '.(VIDEO_BITRATE_ARCHIVE*1.5).'k '# +/- target bitrate
-    . '-b:v '.VIDEO_BITRATE_ARCHIVE.'k '    # Target bitrate basert på UKM-tabell
-    . '-c:v libx264 '                       # Bruk videocodec libx264
-    . '-preset '.$preset.' '                # Mest detaljerte preset (placebo er ikke verdt forskjellen)
-    . '-r 25 '                              # Tvinger 25fps
-    . '-pass 2 '                            # Kjør second-pass
-    . '-passlogfile '.$file_x264.' '        # definerer hvor libx264 statfilen skal leses
+    . '-b:v '.VIDEO_BITRATE_ARCHIVE.'k '     # Target bitrate basert på UKM-tabell
+    . '-c:v libx264 '                        # Bruk videocodec libx264
+    . '-preset '.$preset.' '                 # Mest detaljerte preset (placebo er ikke verdt forskjellen)
+    . '-r 25 '                               # Tvinger 25fps
+    . '-pass 2 '                             # Kjør second-pass
+    . '-passlogfile '.$file_x264.' '         # definerer hvor libx264 statfilen skal leses
 
     ## AUDIO
-    . '-c:a libfdk_aac '                        # Bruk videocodec libfdk_aac
-    . '-cutoff 18000 '                      # Cutoff-frekvens på lyd (default for libfdk_aac er 15kHz)
-    . '-aq 100 '                            # Audiokvalitet 100%
-    . '-b:a '.AUDIO_BITRATE_ARCHIVE.'k '    # Audio bitrate fra config
-    . '-ar '.AUDIO_SAMPLINGRATE_ARCHIVE.' ' # Audio sampling rate (Hz) fra config
-    . '-s '. $video_resolution_archive.' '  # Videooppløsning
-    . '-f mp4 '. $file_store_archive .' 2> '# Output MP4-fil (tving dette..?)
+    . '-c:a libfdk_aac '                     # Bruk videocodec libfdk_aac
+    . '-cutoff 18000 '                       # Cutoff-frekvens på lyd (default for libfdk_aac er 15kHz)
+    . '-aq 100 '                             # Audiokvalitet 100%
+    . '-b:a '.AUDIO_BITRATE_ARCHIVE.'k '     # Audio bitrate fra config
+    . '-ar '.AUDIO_SAMPLINGRATE_ARCHIVE.' '  # Audio sampling rate (Hz) fra config
+    . '-s '. $video_resolution_archive.' '   # Videooppløsning
+    . '-f mp4 '. $file_store_archive .' 2> ' # Output MP4-fil (tving dette..?)
         . $file_log_sp_archive.' ';          # Angi logfil for ffmpeg
 
     ####### QT FASTSTART #######
     #. '&& qt-faststart '.$file_output_archive
     #. ' ' . $file_store_archive;            # Kjør QT Faststart og flytt til lagringsmappe (klar for henting)
 
+if( 0 < $file_duration ) {
+	$thumbnailposition = 8;
+} else {
+	$thumbnailposition = round( $file_duration * 0,1 );
+	if( $thumbnailposition < 1 ) {
+		$thumbnailposition = 1;
+	}
+}
 
 $call_image =
     'ffmpeg '
-    . '-y '                                 # overskriv fil uten å spørre
-    . '-i '.$file_input.' '                 # Input-fil
-    . '-an '                                # Drop audio, spar tid
-    . '-ss 00:00:08 '                       # @ second 08
-    . '-r 1 '                               # Framerate 1
-    . '-vframes 1 '                         # DUNNO
-    . '-s hd720 '                           # Size of image
-    . '-f image2 '                          # DUNNO
-    . '-vcodec mjpeg '                      # Video-codec
-    . '-q:v 1 '                             # Bruk VBR
-    . $file_store_image . ' 2> '            # Output-fil
-    . $file_log_image                       # Logg-fil
+    . '-y '                                          # overskriv fil uten å spørre
+    . '-i '.$file_input.' '                          # Input-fil
+    . '-an '                                         # Drop audio, spar tid
+    . '-ss '.gmdate("H:i:s", $thumbnailposition).' ' # @ second 08
+    . '-r 1 '                                        # Framerate 1
+    . '-vframes 1 '                                  # DUNNO
+    . '-s hd720 '                                    # Size of image
+    . '-f image2 '                                   # DUNNO
+    . '-vcodec mjpeg '                               # Video-codec
+    . '-q:v 1 '                                      # Bruk VBR
+    . $file_store_image . ' 2> '                     # Output-fil
+    . $file_log_image                                # Logg-fil
     ;
 
 
