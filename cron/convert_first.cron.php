@@ -17,9 +17,10 @@ $test = "SELECT `id` FROM `ukmtv`
 		 WHERE `status_progress` = 'converting'
 		 AND `status_first_convert` = 'converting'";
 $test = mysql_query( $test );
-if( mysql_num_rows( $test ) > 0 )
-	die('Already converting one first-convert job. Awaiting that one');
-
+if( mysql_num_rows( $test ) > 0 ) {
+	$row = mysql_fetch_assoc( $test );
+	die('Already converting one first-convert job. Awaiting that one ('. $row['id'] .')');
+}
 
 $sql = "SELECT * FROM `ukmtv`
 		WHERE `status_progress` = 'registered'

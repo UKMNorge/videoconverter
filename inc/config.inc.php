@@ -2,6 +2,7 @@
 
 define('DIR_BASE', str_replace('/inc','', dirname( __FILE__ )).'/');
 define('DIR_TEMP', DIR_BASE .'temp_storage/');
+define('DIR_LOG', DIR_BASE .'log/');
 
 define('DIR_TEMP_UPLOAD', DIR_TEMP .'uploaded/');
 define('DIR_TEMP_CONVERT', DIR_TEMP .'convert/');		// File in conversion atm

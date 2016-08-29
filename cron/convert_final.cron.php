@@ -31,8 +31,9 @@ if( mysql_num_rows( $test ) > 0 )
 $sql = "SELECT * FROM `ukmtv`
 		WHERE `status_progress` = 'converting'
 		AND `status_first_convert` = 'complete'
+		AND `status_final_convert` IS NULL
 		ORDER BY `id` ASC
-		LIMIT 1";
+		";
 $res = mysql_query( $sql );
 $cron = mysql_fetch_assoc( $res );
 

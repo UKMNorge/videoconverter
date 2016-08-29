@@ -30,6 +30,8 @@ if(!$cron)
 
 define('LOG_SCRIPT_NAME', 'VIDEO ARCHIVE STORAGE');
 define('CRON_ID', $cron['id']);
+ini_set("error_log", DIR_LOG . 'cron_'. CRON_ID .'.log');
+
 logg('START');
 
 // Settings status to transferring
@@ -51,17 +53,29 @@ logg('FETCH METADATA from api.ukm.no');
 require_once('../inc/curl.class.php');
 $store = new UKMCURL();
 $store->timeout(8);
-#$apiAnswer = $store->request('http://api. ' . UKM_HOSTNAME . '/video:info/'. CRON_ID);
-$apiAnswer = $store->request('http://api. ' . UKM_HOSTNAME . '/?API=video&CALL=info&ID='. CRON_ID);
+$apiAnswer = $store->request('http://api.' . UKM_HOSTNAME . '/video:info/'. CRON_ID);
+#$apiAnswer = $store->request('http://api.' . UKM_HOSTNAME . '/?API=video&CALL=info&ID='. CRON_ID);
+
+
+// FINN UT HVOR FILENE SKAL LAGRES
+$lesbar_path = $apiAnswer->path->dir;
+$lesbar_filnavn = $apiAnswer->path->filename;    
+$filnavn_lagre = DIR_FINAL_ARCHIVE . $lesbar_path . $lesbar_filnavn;
+
+logg('FILE PATH'. $filnavn_lagre );
+// OPPRETT LAGRINGSMAPPER
+if( !is_dir( DIR_FINAL_ARCHIVE . $lesbar_path ) ) {
+	mkdir( DIR_FINAL_ARCHIVE . $lesbar_path, 0755, true);
+}
+
 
 logg('FETCH METADATA - write to file');
-$fileHandle = fopen( DIR_TEMP_STORE . $file_name_output_archive .'.metadata.txt', 'w');
-writeMetaData($fileHandle, $apiAnswer );
+$filnavn_metadata =  $filnavn_lagre.'.metadata.txt';
+logg('METADATA FILENAME: '. $filnavn_metadata );
+$fileHandle = fopen($filnavn_metadata, 'w');
+fwrite( $fileHandle, writeMetaData($fileHandle, $apiAnswer ) );
 fclose( $fileHandle );
 logg('FETCH METADATA - file written');
-
-var_dump( $apiAnswer );
-die();
 
 $transfer = array('archive' => 'Arkiv','image' => 'IMG');
 
@@ -74,8 +88,10 @@ foreach( $transfer as $varname => $name ) {
     // BURDE VÆRE ET SKIKKELIG NAVN, I EN MENNESKELIG LESBAR STRUKTUR
     // KOMMUNISER MED UKM-TV
     // LAGRE EXIF-DATA
-    $storage_filename = DIR_FINAL_ARCHIVE . ${'file_name_output_'.$varname};
-    copy( ${'file_store_'.$varname}, $storage_filename);
+    $ext = ($varname == 'archive') ? '.mp4' : '.jpg';
+    logg($name .' FRA: '. ${'file_store_'.$varname});
+    logg($name .' TIL: '. $filnavn_lagre . $ext);
+    copy( ${'file_store_'.$varname}, $filnavn_lagre . $ext);
 }
 
 if( $ERROR ) {
@@ -95,14 +111,18 @@ if( $ERROR ) {
 /////////////////////////// FUNCTIONS ///////////////////////////
 
 function writeMetaData($fileHandle, $object, $indent=0 ) {
+	$text = '';
 	if( is_object( $object ) or is_array( $object ) ) {
 		foreach( $object as $key => $value ) {
 			if( is_object( $value ) or is_array( $value ) ) {
 				echo str_repeat(' &nbsp; ', $indent) . strtoupper( $key ) . ': <br />';
-				printData($fileHandle, $value, ($indent+1) );
+				$text .= str_repeat(' ', $indent) . strtoupper( $key ) . ": \r\n";
+				$text .= writeMetaData($fileHandle, $value, ($indent+1) );
 			} else {
 				echo str_repeat(' &nbsp; ', $indent) . ucfirst( $key ) .': '. $value .'<br />';
+				$text .= str_repeat(' ', $indent) . strtoupper( $key ) . ": ". $value ."\r\n";
 			}
 		}
 	}
+	return $text;
 }

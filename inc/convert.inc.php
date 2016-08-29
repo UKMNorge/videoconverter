@@ -17,6 +17,10 @@ if( !$cron )
 require_once('../inc/config.inc.php');
 require_once('../inc/functions.inc.php');
 
+define('CRON_ID', $cron['id']);
+define('LOG_SCRIPT_NAME', 'CONVERT.INC.PHP');
+ini_set("error_log", DIR_LOG . 'cron_'. CRON_ID .'.log');
+
 
 ####################################################################################
 ## EXECUTE CRON CONVERT (JOB IS SELECTED)
@@ -33,6 +37,11 @@ $file_x264              = DIR_TEMP_x264 . $file_name_output_raw .'_x264data.txt'
 $video_duration         = (int) $cron['file_duration'];
 $video_width_raw        = $cron['file_width'];
 $video_height_raw       = $cron['file_height'];
+if( empty( $video_width_raw ) || empty( $video_height_raw ) ) {
+	notify('MANGLER VIDEOSTØRRELSER, KONVERTERING STOPPET');
+	ukmtv_update('status_progress', 'crashed', $cron['id']);
+	die();
+}
 $video_ratio            = $video_width_raw / $video_height_raw;
 $video_width_hd         = round( $video_ratio * 720 );
 $video_width_mobile     = round( $video_ratio * 480 );
@@ -245,9 +254,7 @@ $call_image =
     . $file_log_image                                # Logg-fil
     ;
 
-
-define('CRON_ID', $cron['id']);
-define('LOG_SCRIPT_NAME', 'CONVERT.INC.PHP');
+	
 logg('START');
 logg('CONVERT PASS: '. CONVERT_PASS);
 
@@ -268,12 +275,14 @@ foreach( $create as $varname => $name ) {
     logg(${'call_'.$varname});
     $call_return_code = null;
     exec(${'call_'.$varname}, ${'response_'.$varname}, $call_return_code);
+	logg('CONVERT '. $name .' RETURN CODE: '. $call_return_code );
     logg('CONVERT '. $name .' RESPONSE: '. var_export( ${'response_'.$varname}, true));
     $timer_stop = microtime(true);
     logg('CONVERT '. $name .' TIME: '. ($timer_stop-$timer_start));
 
     if( $call_return_code != 0 ) {
-        logg('FAILED! ERROR discovered, set status = "crashed" and move on');
+	    logg('CALL_RETURN_CODE: '. var_export( $call_return_code, true ) );
+        notify('FAILED! ERROR discovered, set status = "crashed" and move on');
         $ERROR = true;
     }
 }
@@ -285,6 +294,7 @@ if( $ERROR ) {
     logg('CONVERT COMPLETE');
     // UPDATE DATABASE - WE'RE NOW CONVERTED
     ukmtv_update($dbfield, 'complete', $cron['id']);
+    # if archive, $dbfield = status_archive
 
     if( CONVERT_PASS == 'archive' ) {
 	    ukmtv_update('status_progress', 'archive', $cron['id']);
@@ -301,7 +311,7 @@ if( $ERROR ) {
     // Slett converted-filene ( bevarer convert + store-filene)
     // Store vil slette de to siste + logger
     if( CONVERT_PASS == 'archive' ) {
-		unlink( $file_output_archive );    
+		#unlink( $file_output_archive );    // Brukes ikke da vi ikke lengre benytter QT Faststart
     } else {
 	    unlink($file_output_hd);
 	    unlink($file_output_mobile);
