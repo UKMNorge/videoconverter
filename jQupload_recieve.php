@@ -101,9 +101,12 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 	$probe_width = "ffprobe -show_streams '$file_uploaded' 2>&1 | grep ^width | sed s/width=//";
 	$probe_height = "ffprobe -show_streams '$file_uploaded' 2>&1 | grep ^height | sed s/height=//";
 	$probe_duration = "ffprobe -v error -show_entries format=duration -of default=noprint_wrappers=1:nokey=1 '$file_uploaded'";
+    $probe_format = '';
 	$file_width = exec($probe_width);
 	$file_height = exec($probe_height);
 	$file_duration = (int) exec($probe_duration);
+    #$pixel_format = exec( $probe_format );
+    $pixel_format = '';
 	###################################################
 	## MOVE FILE TO CONVERT-DIRECTORY
 	rename($file_uploaded, DIR_TEMP_CONVERT.$file_name);
@@ -119,7 +122,8 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 				`file_width` 	= '$file_width',
 				`file_height` 	= '$file_height',
 				`file_duration` = '$file_duration',
-				`status_progress`='registered'
+				`status_progress`='registered',
+                `pixel_format`  = '$pizel_format'
 			WHERE
 				`id` = '". $CRON_ID ."' LIMIT 1";
 	$res = mysql_query($sql) or die(mysql_error());
