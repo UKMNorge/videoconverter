@@ -123,7 +123,7 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 				`file_height` 	= '$file_height',
 				`file_duration` = '$file_duration',
 				`status_progress`='registered',
-                `pixel_format`  = '$pizel_format'
+                `pixel_format`  = '$pixel_format'
 			WHERE
 				`id` = '". $CRON_ID ."' LIMIT 1";
 	$res = mysql_query($sql) or die(mysql_error());
