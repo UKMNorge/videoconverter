@@ -168,8 +168,13 @@ $call_mobile =
     . '-ar '.AUDIO_SAMPLINGRATE_MOBILE.' '  # Audio sampling rate (Hz) fra config
     . '-s '. $video_resolution_mobile.' '   # Videooppløsning
     . '-f mp4 '. $file_store_mobile .' 2> '# Output MP4-fil (tving dette..?)
-        . $file_log_sp_mobile.' ';           # Angi logfil for ffmpeg
+        . $file_log_sp_mobile.' '           # Angi logfil for ffmpeg
 
+    ## PIXEL FORMAT FIX 
+    .( $cron['pixel_format'] == 'noe-Jardar-mener-er-feil-verdi' ?
+     ' pixel-kode ' # Vil endre pixel-format for mobil til å matche Baseline-profilen
+     : '')
+    ;
     ####### QT FASTSTART #######
     #. '&& qt-faststart '.$file_output_mobile
     #. ' ' . $file_store_mobile;             # Kjør QT Faststart og flytt til lagringsmappe (klar for henting)
