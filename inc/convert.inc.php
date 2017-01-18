@@ -171,8 +171,8 @@ $call_mobile =
         . $file_log_sp_mobile.' '           # Angi logfil for ffmpeg
 
     ## PIXEL FORMAT FIX 
-    .( $cron['pixel_format'] == 'noe-Jardar-mener-er-feil-verdi' ?
-     ' pixel-kode ' # Vil endre pixel-format for mobil til å matche Baseline-profilen
+    .( $cron['pixel_format'] == 'yuv411p' ?
+     ' -pix_fmt yuv420p ' # Vil endre pixel-format for mobil til å matche Baseline-profilen
      : '')
     ;
     ####### QT FASTSTART #######
