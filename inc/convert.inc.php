@@ -126,7 +126,10 @@ $call_mobile =
 	. '-movflags faststart '				# Istedenfor qtfaststart
     . '-g 75 '                              # Antall tråder, 0 kan utnytte alle
     . '-keyint_min 50 '                     # Antall tråder, 0 kan utnytte alle
-
+    ## PIXEL FORMAT FIX 
+    .( $cron['pixel_format'] == 'yuv411p' ?
+     ' -pix_fmt yuv420p ' # Vil endre pixel-format for mobil til å matche Baseline-profilen
+     : '')
     ## VIDEO
     . '-bt '.(VIDEO_BITRATE_MOBILE*1.5).'k '# +/- target bitrate
     . '-b:v '.VIDEO_BITRATE_MOBILE.'k '     # Target bitrate basert på UKM-tabell
@@ -149,7 +152,10 @@ $call_mobile =
 	. '-movflags faststart '				# Istedenfor qtfaststart
     . '-g 75 '                              # GOP-interval (keyframe interval)
     . '-keyint_min 50 '                     # Minimum GOP interval
-
+    ## PIXEL FORMAT FIX 
+    .( $cron['pixel_format'] == 'yuv411p' ?
+     ' -pix_fmt yuv420p ' # Vil endre pixel-format for mobil til å matche Baseline-profilen
+     : '')
     ## VIDEO
     . '-bt '.(VIDEO_BITRATE_MOBILE*1.5).'k '# +/- target bitrate
     . '-b:v '.VIDEO_BITRATE_MOBILE.'k '     # Target bitrate basert på UKM-tabell
@@ -169,11 +175,6 @@ $call_mobile =
     . '-s '. $video_resolution_mobile.' '   # Videooppløsning
     . '-f mp4 '. $file_store_mobile .' 2> '# Output MP4-fil (tving dette..?)
         . $file_log_sp_mobile.' '           # Angi logfil for ffmpeg
-
-    ## PIXEL FORMAT FIX 
-    .( $cron['pixel_format'] == 'yuv411p' ?
-     ' -pix_fmt yuv420p ' # Vil endre pixel-format for mobil til å matche Baseline-profilen
-     : '')
     ;
     ####### QT FASTSTART #######
     #. '&& qt-faststart '.$file_output_mobile
