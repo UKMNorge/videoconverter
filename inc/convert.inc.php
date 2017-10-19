@@ -127,7 +127,7 @@ $call_mobile =
     . '-g 75 '                              # Antall tråder, 0 kan utnytte alle
     . '-keyint_min 50 '                     # Antall tråder, 0 kan utnytte alle
     ## PIXEL FORMAT FIX 
-    .( $cron['pixel_format'] == 'yuv411p' ?
+    .( $cron['pixel_format'] == 'yuv411p' || 'yuv422p' ?
      ' -pix_fmt yuv420p ' # Vil endre pixel-format for mobil til å matche Baseline-profilen
      : '')
     ## VIDEO
@@ -153,7 +153,7 @@ $call_mobile =
     . '-g 75 '                              # GOP-interval (keyframe interval)
     . '-keyint_min 50 '                     # Minimum GOP interval
     ## PIXEL FORMAT FIX 
-    .( $cron['pixel_format'] == 'yuv411p' ?
+    .( $cron['pixel_format'] == 'yuv411p' || 'yuv422p' ?
      ' -pix_fmt yuv420p ' # Vil endre pixel-format for mobil til å matche Baseline-profilen
      : '')
     ## VIDEO
