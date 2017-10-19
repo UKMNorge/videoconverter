@@ -37,7 +37,7 @@ class CurlFileUploader {
 	*/
 	function UploadFile ($port=false) {
    		$ch = curl_init();
-                curl_setopt($this->curl, CURLOPT_USERAGENT, "UKMNorge API");
+   		curl_setopt($ch, CURLOPT_USERAGENT, "UKMNorge API");
    		curl_setopt($ch, CURLOPT_URL, $this->uploadURL );
    		curl_setopt($ch, CURLOPT_POST, 1 );
 		if($port !== false) curl_setopt($ch, CURLOPT_PORT, $port);
@@ -45,6 +45,7 @@ class CurlFileUploader {
 		curl_setopt($ch, CURLOPT_HTTPHEADER, array('Expect:'));
    		curl_setopt($ch, CURLOPT_POSTFIELDS, $this->postParams);
    		curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false); // WHOA, PLEASE DON'T
    		//curl_setopt($ch, CURLOPT_TIMEOUT, 300);
    		$postResult = curl_exec($ch);
    		if (curl_errno($ch)) return array(false, curl_errno($ch));
