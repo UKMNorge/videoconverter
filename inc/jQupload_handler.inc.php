@@ -45,8 +45,8 @@ class UploadHandler
             // Set the following option to 'POST', if your server does not support
             // DELETE requests. This is a parameter sent to the client:
             'delete_type' => 'DELETE',
-            'access_control_allow_origin' => '*',
-            'access_control_allow_credentials' => false,
+            'access_control_allow_origin' => 'https://'.UKM_HOSTNAME,
+            'access_control_allow_credentials' => true,
             'access_control_allow_methods' => array(
                 'OPTIONS',
                 'HEAD',
