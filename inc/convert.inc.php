@@ -235,10 +235,10 @@ $call_archive =
     #. '&& qt-faststart '.$file_output_archive
     #. ' ' . $file_store_archive;            # Kjør QT Faststart og flytt til lagringsmappe (klar for henting)
 
-if( 0 < $file_duration ) {
+if( 0 < $video_duration ) {
 	$thumbnailposition = 8;
 } else {
-	$thumbnailposition = round( $file_duration * 0,1 );
+	$thumbnailposition = round( $video_duration * 0,1 );
 	if( $thumbnailposition < 1 ) {
 		$thumbnailposition = 1;
 	}
