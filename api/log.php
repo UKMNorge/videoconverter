@@ -1,4 +1,6 @@
 <?php
+require_once('UKMconfig.inc.php');
+require_once('../inc/headers.inc.php');
 
 if( !isset( $_GET['id'] ) || !isset( $_GET['hash'] ) ) {
 	die('Mangler parametre');
@@ -7,7 +9,6 @@ if( !isset( $_GET['id'] ) || !isset( $_GET['hash'] ) ) {
 $ID = $_GET['id'];
 $HASH = $_GET['hash'];
 
-require_once('UKMconfig.inc.php');
 require_once('../inc/config.inc.php');
 
 $test = "SELECT `file_name` FROM `ukmtv` WHERE `id` = '". $ID ."'";
