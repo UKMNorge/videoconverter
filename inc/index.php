@@ -1,4 +1,4 @@
 <?php
-header("Location: http://ukm.no/");
+header("Location: https://ukm.no/");
 exit();
 ?>

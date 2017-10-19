@@ -137,7 +137,7 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 	require_once('inc/curl.class.php');
 	$store = new UKMCURL();
 	$store->timeout(2);
-	$store->request('http://videoconverter. ' . UKM_HOSTNAME . '/cron/convert_first.cron.php');
+	$store->request('https://videoconverter. ' . UKM_HOSTNAME . '/cron/convert_first.cron.php');
 
 	die(json_encode($data));
 ?>

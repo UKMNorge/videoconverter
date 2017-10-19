@@ -34,7 +34,7 @@ define('AUDIO_BITRATE_ARCHIVE', 360);
 define('AUDIO_SAMPLINGRATE_ARCHIVE', 44100);
 define('VIDEO_BITRATE_ARCHIVE', 8000);
 
-define('REMOTE_SERVER', 'http://video.' . UKM_HOSTNAME);
+define('REMOTE_SERVER', 'https://video.' . UKM_HOSTNAME);
 
 // DATABASE CONNECTION
 $connect = mysql_connect('localhost', UKM_VIDEOCONVERTER_DB_USER, UKM_VIDEOCONVERTER_DB_PASS) or die(mysql_error());

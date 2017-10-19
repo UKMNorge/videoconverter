@@ -53,8 +53,8 @@ logg('FETCH METADATA from api.ukm.no');
 require_once('../inc/curl.class.php');
 $store = new UKMCURL();
 $store->timeout(8);
-$apiAnswer = $store->request('http://api.' . UKM_HOSTNAME . '/video:info/'. CRON_ID);
-#$apiAnswer = $store->request('http://api.' . UKM_HOSTNAME . '/?API=video&CALL=info&ID='. CRON_ID);
+$apiAnswer = $store->request('https://api.' . UKM_HOSTNAME . '/video:info/'. CRON_ID);
+#$apiAnswer = $store->request('https://api.' . UKM_HOSTNAME . '/?API=video&CALL=info&ID='. CRON_ID);
 
 
 // FINN UT HVOR FILENE SKAL LAGRES

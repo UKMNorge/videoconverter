@@ -332,5 +332,5 @@ if( $ERROR ) {
     require_once('../inc/curl.class.php');
     $store = new UKMCURL();
     $store->timeout(2);
-    $store->request('http://videoconverter. ' . UKM_HOSTNAME . '/cron/store.cron.php');
+    $store->request('https://videoconverter. ' . UKM_HOSTNAME . '/cron/store.cron.php');
 }

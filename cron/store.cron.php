@@ -104,7 +104,7 @@ if( $ERROR ) {
 } else {
     ukmtv_update('status_progress', 'transferred', $cron['id']);
     logg('NOTIFY UKM.no');
-    logg('http://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
+    logg('https://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
     foreach( $cron as $key => $val ) {
         logg( 'CURL POST:'.$key .' => '. var_export( $val, true ) );
     }
@@ -118,7 +118,7 @@ if( $ERROR ) {
 	} else {
 	    $register->timeout(20);
 	}
-    $register->request('http://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
+    $register->request('https://api.' . UKM_HOSTNAME . '/video:registrer/'.$cron['id']);
 
     foreach( $register as $key => $val ) {
         logg( 'CURL RESPONSE:'.$key .' => '. var_export( $val, true ) );
