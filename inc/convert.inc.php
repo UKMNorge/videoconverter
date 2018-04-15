@@ -235,13 +235,16 @@ $call_archive =
     #. '&& qt-faststart '.$file_output_archive
     #. ' ' . $file_store_archive;            # Kjør QT Faststart og flytt til lagringsmappe (klar for henting)
 
-if( 0 < $video_duration ) {
-	$thumbnailposition = 8;
+if( $video_duration < 8 ) {
+	$thumbnailposition = floor( $video_duration * 0,1 );
+} elseif( $video_duration > 0 ) {
+	$thumbnailposition = floor( $video_duration * 0,1 );	
 } else {
-	$thumbnailposition = round( $video_duration * 0,1 );
-	if( $thumbnailposition < 1 ) {
-		$thumbnailposition = 1;
-	}
+	$thumbnailposition = 8;
+}
+
+if( $thumbnailposition < 1 ) {
+	$thumbnailposition = 1;
 }
 
 $call_image =
@@ -331,6 +334,6 @@ if( $ERROR ) {
 
     require_once('../inc/curl.class.php');
     $store = new UKMCURL();
-    $store->timeout(2);
+    $store->timeout(10);
     $store->request('https://videoconverter. ' . UKM_HOSTNAME . '/cron/store.cron.php');
 }
