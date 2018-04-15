@@ -52,7 +52,7 @@ logg('FETCH METADATA from api.ukm.no');
 // Initiate final convert if possible (script will determine whether to process or not)
 require_once('../inc/curl.class.php');
 $store = new UKMCURL();
-$store->timeout(8);
+$store->timeout(10);
 $apiAnswer = $store->request('https://api.' . UKM_HOSTNAME . '/video:info/'. CRON_ID);
 #$apiAnswer = $store->request('https://api.' . UKM_HOSTNAME . '/?API=video&CALL=info&ID='. CRON_ID);
 

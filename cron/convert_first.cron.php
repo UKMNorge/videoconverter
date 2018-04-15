@@ -34,5 +34,5 @@ require_once('../inc/convert.inc.php');
 // Initiate final convert if possible (script will determine whether to process or not)
 require_once('../inc/curl.class.php');
 $store = new UKMCURL();
-$store->timeout(2);
+$store->timeout(10);
 $store->request('https://videoconverter. ' . UKM_HOSTNAME . '/cron/convert_final.cron.php');
