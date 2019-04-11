@@ -72,11 +72,13 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 	## (MUST BE UPDATED AS CRON_ID IS CRITICAL PART
 	##  OF FILENAME)
 	
+	error_log('- Register with database');
 	$insert = "INSERT INTO `ukmtv`
 				   (`season`, `pl_id`, `type`, `b_id`, `blog_id`, `status_progress`)
 			VALUES ('$SEASON', '$PL_ID', '$TYPE', '$B_ID', '$BLOG_ID', 'registering')";
 	$res = mysql_query($insert);
 	$CRON_ID = mysql_insert_id();
+	error_log('- CRON_ID: '. $CRON_ID);
 	
 ################################################################################################
 ## START VIDEOTECHNICAL CALCULATIONS (PREPARATIONS FOR CONVERT)
@@ -93,6 +95,7 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 			
 	###################################################
 	## CALCULATE THE REAL WIDTH AND HEIGHT BASED ON UPLOADED FILE
+	error_log('- Calc dimensions');
 	$file_uploaded = DIR_TEMP_UPLOAD.$data_object->name;
 	$probe_width = "ffprobe -show_streams '$file_uploaded' 2>&1 | grep ^width | sed s/width=//";
 	$probe_height = "ffprobe -show_streams '$file_uploaded' 2>&1 | grep ^height | sed s/height=//";
@@ -101,7 +104,17 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 	$file_width = exec($probe_width);
 	$file_height = exec($probe_height);
 	$file_duration = (int) exec($probe_duration);
-    $pixel_format = exec( $probe_format );
+	$pixel_format = exec( $probe_format );
+	
+	error_log(
+		'- WIDTH: ' .
+		var_export( $file_width, true ) .
+		' HEIGHT: '.
+		var_export( $file_height, true ) .
+		' PIXEL_FORMAT: ' .
+		var_export( $pixel_format )
+	);
+	error_log('- DURATION: ' . var_export( $file_duration, true ) );
     #$pixel_format = '';
 	###################################################
 	## MOVE FILE TO CONVERT-DIRECTORY
@@ -130,10 +143,13 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 	$data->files[0] = $data_object;
 	$data->success = true;
 	
+	error_log('- SUCCESS!');
+	error_log('- TRIGGER CONVERT');
+	
 	require_once('inc/curl.class.php');
 	$store = new UKMCURL();
 	$store->timeout(2);
 	$store->request('https://videoconverter. ' . UKM_HOSTNAME . '/cron/convert_first.cron.php');
-
+	error_log('- COMPLETE');
 	die(json_encode($data));
 ?>
