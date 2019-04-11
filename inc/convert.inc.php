@@ -39,6 +39,7 @@ $video_width_raw        = $cron['file_width'];
 $video_height_raw       = $cron['file_height'];
 if( empty( $video_width_raw ) || empty( $video_height_raw ) ) {
 	notify('MANGLER VIDEOSTØRRELSER, KONVERTERING STOPPET');
+	logg('FILE NAME: '. $cron['file_name'] );
 	ukmtv_update('status_progress', 'crashed', $cron['id']);
 	die();
 }
