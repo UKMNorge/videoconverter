@@ -112,7 +112,7 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 		' HEIGHT: '.
 		var_export( $file_height, true ) .
 		' PIXEL_FORMAT: ' .
-		var_export( $pixel_format )
+		var_export( $pixel_format, true )
 	);
 	error_log('- DURATION: ' . var_export( $file_duration, true ) );
     #$pixel_format = '';
