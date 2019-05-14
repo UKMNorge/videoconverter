@@ -7,6 +7,13 @@ require_once('inc/jQupload_handler.inc.php');
 require_once('UKMconfig.inc.php');
 require_once('inc/config.inc.php');
 
+################################################
+## SET ALL HEADERS
+require_once('inc/headers.inc.php');
+
+################################################
+## END WITH SUCCESS IF OPTIONS-REQUEST.
+## Prevents logging "error with file size"
 if( $_SERVER['REQUEST_METHOD'] == 'OPTIONS' ) {
 	die('success');
 }
@@ -16,8 +23,7 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 ## CHECK FOR, AND SAVE "STATIC INFOS" (STUPID STUFF, NO CALCULATIONS AND SO ON)
 ################################################################################################
 	################################################
-	## SET ALL HEADERS AND ACTUALLY PERFORM UPLOAD 
-	require_once('inc/headers.inc.php');
+	## ACTUALLY PERFORM UPLOAD 
 	$upload_handler = new UploadHandler(array('upload_dir' => DIR_TEMP_UPLOAD));
 
 	################################################
