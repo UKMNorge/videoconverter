@@ -7,6 +7,9 @@ require_once('inc/jQupload_handler.inc.php');
 require_once('UKMconfig.inc.php');
 require_once('inc/config.inc.php');
 
+if( $_SERVER['REQUEST_METHOD'] == 'OPTIONS' ) {
+	die('success');
+}
 
 error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 ################################################################################################
