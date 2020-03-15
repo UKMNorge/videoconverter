@@ -11,7 +11,7 @@ define('DIR_TEMP_FASTSTART', DIR_TEMP .'faststart/');	// The file after QT-FASTS
 define('DIR_TEMP_STORE', DIR_TEMP .'store/');			// The file after QT-FASTSTART
 define('DIR_TEMP_LOG', DIR_TEMP .'log/');
 define('DIR_TEMP_x264', DIR_TEMP .'x264/');
-define('DIR_FINAL_ARCHIVE', DIR_BASE .'MNT_archive_at_digark/');
+define('DIR_FINAL_ARCHIVE', DIR_BASE .'MNT_archive_at_digark/UKMTV/');
 
 // FIND FILENAME IN AND OUT
 $file_id_hd					= '_720p';
