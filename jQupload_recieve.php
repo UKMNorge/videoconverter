@@ -30,6 +30,14 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 	## GET THE DATA ARRAY FOR FURTHER MANIPULATING
 	$data = json_decode($upload_handler->get_body());
 	$data_object = $data->files[0];
+
+	if(!empty($data_object->error)) {
+		$error = new stdClass;
+		$error->success = false;
+		$error->message = 'Det er en feil med filen. Dette kan være en feil i nettleseren din, eller fordi filen er skadet og inneholder feil informasjon om egen filstørrelse.';
+		$error->data = $data;
+		die(json_encode($error));
+	}
 	
 	if(empty($data_object->size)) {
 		$error = new stdClass;
@@ -50,6 +58,7 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 		$error = new stdClass;
 		$error->success = false;
 		$error->message = 'Opplasteren sendte ikke med alle POST-verdier (kontakt UKM Norge support, dette er en systemfeil)';
+		$error->method = $_SERVER["REQUEST_METHOD"];
 		$error->request = $_REQUEST;
 		$error->post = $_POST;
 		$error->get = $_GET;
