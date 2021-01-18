@@ -95,6 +95,12 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 				   (`season`, `pl_id`, `type`, `b_id`, `blog_id`, `status_progress`)
 			VALUES ('$SEASON', '$PL_ID', '$TYPE', '$B_ID', '$BLOG_ID', 'registering')";
 	$res = $db->query($insert);
+	if($res == false) {
+		error_log('\n\nERROR: INSERT INTO DATABASE FAILED. FAULT: '.$db->error .'. \nEXITING');
+		$data->success = false;
+		$data->error = $db->error;
+		die(json_encode($data));
+	}
 	$CRON_ID = $res->insert_id;
 	error_log('- CRON_ID: '. $CRON_ID);
 	
