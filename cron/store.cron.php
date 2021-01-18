@@ -16,8 +16,8 @@ $test = "SELECT `id` FROM `ukmtv`
         WHERE `status_progress` = 'transferring'
         ORDER BY `id` ASC
         LIMIT 1";
-$testres = mysql_query( $test );
-if( mysql_num_rows( $testres ) > 0 )
+$testresult = $db->query( $test );
+if( $testresult != false && $testresult->num_rows > 0 )
     die('Already transferring one film. Waiting for this to finish');
 
 // FIND NEXT TRANSFERJOB
@@ -26,8 +26,8 @@ $sql = "SELECT * FROM `ukmtv`
         ORDER BY `id` ASC
         LIMIT 1";
 
-$res = mysql_query( $sql );
-$cron = mysql_fetch_assoc( $res );
+$res = $db->query( $sql );
+$cron = $res->fetch_assoc();
 if(!$cron)
     die('Nothing to store!');
 
@@ -112,7 +112,7 @@ if( $ERROR ) {
     $register = new UKMCURL();
     $register->post($cron);
     // SQLins kan ta tid mens serveren tar backup. La den få litt tid på natta
-    // SQLins er meget treg for tiden. M�å optimaliseres, men midlertidig kan videostorage være tålmodig
+    // SQLins er meget treg for tiden. M�å optimaliseres, men midlertidig kan videostorage være tålmodig
     if( date('G') < 5 ) {
 		$register->timeout(30);
 	} else {

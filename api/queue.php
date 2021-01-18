@@ -25,9 +25,9 @@ $sql = "SELECT	`id`,
 		WHERE `status_progress` != 'complete'
 		AND `status_progress` != 'does_not_exist'
 		ORDER BY `id` ASC";
-$res = mysql_query( $sql );
+$res = $db->query( $sql );
 
-while( $r = mysql_fetch_assoc( $res ) ) {
+while( $r = $res->fetch_assoc() ) {
 	
 	
 	if( 	'converting' == $r['status_progress'] && 'complete' == $r['status_final_convert'] ) {

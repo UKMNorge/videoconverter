@@ -8,7 +8,7 @@ if( !isset( $_GET['cron_id'] ) ) {
 }
 
 $sql = "SELECT * FROM `ukmtv` WHERE `id` = '". (int) $_GET['cron_id'] ."';";
-$res = mysql_query( $sql );
-$cron = mysql_fetch_assoc( $res );
+$res = $db->query( $sql );
+$cron = $res->fetch_assoc();
 
 die( json_encode( array('success'=>true, 'data'=> $cron ) ) );

@@ -85,8 +85,8 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 	$insert = "INSERT INTO `ukmtv`
 				   (`season`, `pl_id`, `type`, `b_id`, `blog_id`, `status_progress`)
 			VALUES ('$SEASON', '$PL_ID', '$TYPE', '$B_ID', '$BLOG_ID', 'registering')";
-	$res = mysql_query($insert);
-	$CRON_ID = mysql_insert_id();
+	$res = $db->query($insert);
+	$CRON_ID = $res->insert_id;
 	error_log('- CRON_ID: '. $CRON_ID);
 	
 ################################################################################################
@@ -144,7 +144,7 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
                 `pixel_format`  = '$pixel_format'
 			WHERE
 				`id` = '". $CRON_ID ."' LIMIT 1";
-	$res = mysql_query($sql) or die(mysql_error());
+	$res = $db->query($sql) or die($db->error);
 	
 	###################################################
 	## CREATE RETURN-OBJECT FOR JQUERY UPLOADER

@@ -16,7 +16,7 @@ if (!isset($_GET['cronId'])) {
 }
 
 // FIND REQUESTED CRON
-$res = mysql_query(
+$res = $db->query(
     "SELECT * 
     FROM `ukmtv` 
     WHERE `id` = '" . intval($_GET['cronId']) . "'
@@ -27,7 +27,7 @@ if( !$res ) {
     die(json_encode(false));
 }
 
-$cron = mysql_fetch_assoc($res);
+$cron = $res->fetch_assoc();
 $register = new UKMCURL();
 $register->post($cron);
 $register->request('https://api.' . UKM_HOSTNAME . '/video:registrer/' . $cron['cronId']);

@@ -4,8 +4,8 @@ require_once('../inc/headers.inc.php');
 require_once('../inc/config.inc.php');
 
 function queue_count( $sql ) {
-	$res = mysql_query( $sql );
-	$cron = mysql_fetch_assoc( $res );
+	$res = $db->query( $sql );
+	$cron = $res->fetch_assoc();
 	return $cron['count'];
 }
 

@@ -16,15 +16,15 @@ $dbfield = 'status_final_convert';
 $test = "SELECT `id` FROM `ukmtv`
 		 WHERE `status_progress` = 'converting'
 		 AND `status_final_convert` = 'converting'";
-$test = mysql_query( $test );
-if( mysql_num_rows( $test ) > 0 )
+$test_result = $db->query( $test );
+if( $test_result != false && $test_result->num_rows > 0 )
 	die('Already converting one final-convert job. Awaiting that one');
 
 // If first-passes still queued, take a nap
 $test = "SELECT `id` FROM `ukmtv`
 		 WHERE `status_progress` = 'registered'";
-$test = mysql_query( $test );
-if( mysql_num_rows( $test ) > 0 )
+$test_result = $db->query( $test );
+if( $test_result != false && $test_result->num_rows > 0 )
 	die('First-convert jobs to be done. Taking a nap');
 
 // FIND NEXT JOB
@@ -34,6 +34,6 @@ $sql = "SELECT * FROM `ukmtv`
 		AND (`status_final_convert` IS NULL OR `status_final_convert` = '')
 		ORDER BY `id` ASC
 		LIMIT 1";
-$res = mysql_query( $sql );
-$cron = mysql_fetch_assoc( $res );
+$res = $db->query( $sql );
+$cron = $res->fetch_assoc();
 require_once('../inc/convert.inc.php');
