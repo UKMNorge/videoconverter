@@ -38,3 +38,10 @@ define('REMOTE_SERVER', 'https://video.' . UKM_HOSTNAME);
 
 // DATABASE CONNECTION
 $db = mysqli_connect('localhost', UKM_VIDEOCONVERTER_DB_USER, UKM_VIDEOCONVERTER_DB_PASS, 'converter');
+if($db === false) {
+    $data = new stdClass();
+    $data->success = false;
+    $data->error = "Failed to connect to database!";
+    die(json_encode($data));
+}
+$db->query("SET @@SESSION.sql_mode = '';");

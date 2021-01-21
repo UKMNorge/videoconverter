@@ -14,8 +14,8 @@ if( !isset($cron) )
 if( !$cron )
     die('Nothing to do! (empty $cron)');
 
-require_once('../inc/config.inc.php');
-require_once('../inc/functions.inc.php');
+require_once('config.inc.php');
+require_once('functions.inc.php');
 
 define('CRON_ID', $cron['id']);
 define('LOG_SCRIPT_NAME', 'CONVERT.INC.PHP');

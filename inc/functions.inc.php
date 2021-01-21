@@ -1,7 +1,8 @@
 <?php
+
 function ukmtv_update($field, $status, $id) {	
 	logg('DB: '. "UPDATE `ukmtv` SET `".$field."` = '".$status."' WHERE `id` = '".$id."'");
-	
+	global $db;
 	$db->query("UPDATE `ukmtv` SET `".$field."` = '".$status."' WHERE `id` = '".$id."'") or die($db->error);
 }
 
@@ -10,6 +11,7 @@ function logg( $message ) {
 } 
 
 function notify( $message ) {
+	global $db;
 	logg( $message );
 	if( defined('CRON_ID') && is_numeric( CRON_ID ) ) {
 		$db->query("UPDATE `ukmtv` SET `admin_notice` = 'true' WHERE `id` = '". CRON_ID ."'") or die($db->error);

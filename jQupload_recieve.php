@@ -93,15 +93,16 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 	error_log('- Register with database');
 	$insert = "INSERT INTO `ukmtv`
 				   (`season`, `pl_id`, `type`, `b_id`, `blog_id`, `status_progress`)
-			VALUES ('$SEASON', '$PL_ID', '$TYPE', '$B_ID', '$BLOG_ID', 'registering')";
+			VALUES ('$SEASON', '$PL_ID', '$TYPE', '$B_ID', '$BLOG_ID', 'registering');";
 	$res = $db->query($insert);
+	
 	if($res == false) {
 		error_log('\n\nERROR: INSERT INTO DATABASE FAILED. FAULT: '.$db->error .'. \nEXITING');
 		$data->success = false;
 		$data->error = $db->error;
 		die(json_encode($data));
 	}
-	$CRON_ID = $res->insert_id;
+	$CRON_ID = $db->insert_id;
 	error_log('- CRON_ID: '. $CRON_ID);
 	
 ################################################################################################
@@ -139,6 +140,14 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 		var_export( $pixel_format, true )
 	);
 	error_log('- DURATION: ' . var_export( $file_duration, true ) );
+
+	if( empty($file_width) && empty($file_height)) {
+		$data = new stdClass();
+		$data->success = false;
+		$data->error = "Mangler både filbredde og -høyde! Kan indikere at ffmpeg ikke er installert!";
+		error_log($data->error);
+		die(json_encode($data));
+	}
     #$pixel_format = '';
 	###################################################
 	## MOVE FILE TO CONVERT-DIRECTORY
@@ -159,7 +168,11 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
                 `pixel_format`  = '$pixel_format'
 			WHERE
 				`id` = '". $CRON_ID ."' LIMIT 1";
-	$res = $db->query($sql) or die($db->error);
+	$res = $db->query($sql);
+	if($res === false) {
+		error_log("Failed to update database with file data: ".$db->error);
+		die($db->error);
+	}
 	
 	###################################################
 	## CREATE RETURN-OBJECT FOR JQUERY UPLOADER
