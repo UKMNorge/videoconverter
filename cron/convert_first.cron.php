@@ -5,7 +5,6 @@ ignore_user_abort(true);
 require_once('UKMconfig.inc.php');
 require_once('../inc/config.inc.php');
 
-
 define('CONVERT_PASS', 'first');
 
 $preset = 'ultrafast';

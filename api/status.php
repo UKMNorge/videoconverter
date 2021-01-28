@@ -4,6 +4,7 @@ require_once('../inc/headers.inc.php');
 require_once('../inc/config.inc.php');
 
 function queue_count( $sql ) {
+	global $db;
 	$res = $db->query( $sql );
 	$cron = $res->fetch_assoc();
 	return $cron['count'];
