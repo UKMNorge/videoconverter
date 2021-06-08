@@ -4,6 +4,7 @@ namespace UKMNorge\Videoconverter;
 
 use Exception;
 use UKMNorge\Database\SQL\Insert;
+use UKMNorge\Database\SQL\Update;
 use UKMNorge\Database\SQL\Query;
 
 class Jobb
@@ -50,31 +51,51 @@ class Jobb
         $query->add('b_id', $film->getInnslagId());
         $query->add('status_progress', 'registering');
 
-        $res = $query->run();
+        $cron_id = $query->run();
 
-        if (!$res) {
+        if (!$cron_id) {
             throw new Exception(
                 'Kunne ikke opprette jobb'
             );
         }
 
-        // Beregner filbaner, og henter detaljer
+        // BEREGNER FILBANER
         // Siden denne er avhengig av JobbId (cron_id), 
         // kjøres det en update-query nedenfor
         $filbane = Fil::finnFilbane( $eier, $film );
-        $filnavn = Fil::finnFilnavn( $eier, $film, $res, Fil::finnExtension($filbane) );
+        $filnavn = Fil::finnFilnavn( $eier, $film, $cron_id, Fil::finnExtension($filbane) );
         $this->fil = new Fil( $filbane, $filnavn );
 
+        // HENTER DETALJER OM FILFORMAT
         $this->getFilm()->beregnDetaljerFraFil( $this->getFil() );
         
+        // FLYTT FILEN
+        $this->getFil()->flytt()->tilConvert();
+
+        // OPPDATERER DATABASEN
+        $update = new Update(static::TABLE,['id' => $cron_id]);
+
+        $update->add('file_name',       $this->getFil()->getNavn());
+        $update->add('file_path',       $this->getFil()->getBane());
+        $update->add('file_type',       '.'.$this->getFil()->getExtension());
         
+        $update->add('file_width',      $this->getFilm()->getBredde());
+        $update->add('file_height',     $this->getFilm()->getHoyde());
+        $update->add('file_duration',   $this->getFilm()->getVarighet());
+        $update->add('pixel_format',    $this->getFilm()->getPikselFormat());
+
+        $update->add('status_progress', 'registered');
+
+        $res = $update->run();
+
+        if( !$res ) {
+            throw new Exception(
+                'Klarte ikke å lagre detaljer om filmen'
+            );
+        }
 
 
         return new static($res);
-    }
-
-    private function beregnFilmDetaljer() {
-
     }
 
     /**
