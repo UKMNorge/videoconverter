@@ -1,4 +1,5 @@
 <?php
 #require_once('inc/headers.inc.php');
-echo gethostbyname('videoconverter.ukm.no');
+require_once('UKMconfig.inc.php');
+echo gethostbyname('videoconverter.' . UKM_HOSTNAME);
 ?>
