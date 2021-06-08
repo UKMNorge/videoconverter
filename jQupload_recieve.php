@@ -6,6 +6,7 @@ ini_set('display_errors', 0);
 require_once('inc/jQupload_handler.inc.php');
 require_once('UKMconfig.inc.php');
 require_once('inc/config.inc.php');
+require_once('inc/functions.inc.php');
 
 ################################################
 ## SET ALL HEADERS
@@ -85,8 +86,8 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
 	$insert = "INSERT INTO `ukmtv`
 				   (`season`, `pl_id`, `type`, `b_id`, `blog_id`, `status_progress`)
 			VALUES ('$SEASON', '$PL_ID', '$TYPE', '$B_ID', '$BLOG_ID', 'registering')";
-	$res = mysql_query($insert);
-	$CRON_ID = mysql_insert_id();
+	$res = DB::query($insert);
+	$CRON_ID = DB::getInsertId();
 	error_log('- CRON_ID: '. $CRON_ID);
 	
 ################################################################################################
@@ -144,7 +145,7 @@ error_log('UPLOADED: '. DIR_TEMP_UPLOAD);
                 `pixel_format`  = '$pixel_format'
 			WHERE
 				`id` = '". $CRON_ID ."' LIMIT 1";
-	$res = mysql_query($sql) or die(mysql_error());
+	$res = DB::query($sql);
 	
 	###################################################
 	## CREATE RETURN-OBJECT FOR JQUERY UPLOADER
