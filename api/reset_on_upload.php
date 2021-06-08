@@ -19,8 +19,8 @@ $sql = "SELECT `id`
 		AND `status_first_convert` = 'complete'
 		AND `id` = '".$CRON_ID."'
 		LIMIT 1";
-$res = mysql_query( $sql );
-$row = mysql_fetch_assoc( $res );
+$res = mysqli_query( $sql );
+$row = mysqli_fetch_assoc( $res );
 $db_id = $row['id'];
 
 if( (int) $db_id != (int) $CRON_ID ) {
@@ -38,10 +38,10 @@ $sql_upd = "UPDATE `ukmtv`
 			LIMIT 1
 			";
 logg( str_replace(array("\r", "\n", "\t"), '', $sql_upd ) );
-$res = mysql_query( $sql_upd );
+$res = mysqli_query( $sql_upd );
 
 if( !$res ) {
-	logg( mysql_error() );
+	logg( mysqli_error() );
 }
 logg('Fil resatt');
 
