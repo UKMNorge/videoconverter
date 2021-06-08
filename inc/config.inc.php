@@ -1,5 +1,11 @@
 <?php
 
+use UKMNorge\Database\SQL\DB;
+
+require_once('UKM/Autoloader.php');
+
+DB::setDatabase('videoconverter');
+
 define('DIR_BASE', str_replace('/inc','', dirname( __FILE__ )).'/');
 define('DIR_TEMP', DIR_BASE .'temp_storage/');
 define('DIR_LOG', DIR_BASE .'log/');
