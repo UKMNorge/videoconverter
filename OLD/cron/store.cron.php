@@ -112,7 +112,7 @@ if( $ERROR ) {
     $register = new UKMCURL();
     $register->post($cron);
     // SQLins kan ta tid mens serveren tar backup. La den få litt tid på natta
-    // SQLins er meget treg for tiden. M�å optimaliseres, men midlertidig kan videostorage være tålmodig
+    // SQLins er meget treg for tiden. M�å optimaliseres, men midlertidig kan videostorage være tålmodig
     if( date('G') < 5 ) {
 		$register->timeout(30);
 	} else {
