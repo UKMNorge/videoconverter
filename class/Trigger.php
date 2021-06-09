@@ -16,6 +16,16 @@ class Trigger
         return static::request('convert_first');
     }
 
+
+    /**
+     * Start lagringen
+     *
+     * @return boolean
+     */
+    public static function store() : bool {
+        return static::request('store');
+    }
+
     /**
      * Send trigger request
      *

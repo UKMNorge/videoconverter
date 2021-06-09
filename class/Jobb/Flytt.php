@@ -1,19 +1,17 @@
 <?php
 
-namespace UKMNorge\Videoconverter;
+namespace UKMNorge\Videoconverter\Jobb;
+
+use UKMNorge\Videoconverter\Converter;
 
 class Flytt
 {
-
-    const BASE = '/var/www/videoconverter/';
-    const TEMP = static::BASE . 'temp_storage/';
-
-    const UPLOAD = static::TEMP . 'uploaded/';
-    const CONVERT = static::TEMP . 'convert/';
-    const CONVERTED = static::TEMP . 'converted/';
-    const FASTSTART = static::TEMP . 'faststart/';
-    const STORE = static::TEMP . 'store/';
-    const x264 = static::TEMP . 'x264/';
+    const UPLOAD = 'uploaded/';
+    const CONVERT = 'convert/';
+    const CONVERTED = 'converted/';
+    const FASTSTART = 'faststart/';
+    const STORE = 'store/';
+    const x264 = 'x264/';
 
 
     private $fil;
@@ -30,7 +28,7 @@ class Flytt
      */
     public function tilConvert(): String
     {
-        return $this->move($this->fil->getFil(), static::CONVERT);
+        return $this->move($this->fil->getFil(), Converter::DIR_TEMP . static::CONVERT);
     }
 
     /**
@@ -40,7 +38,7 @@ class Flytt
      */
     public function tilConverted(): String
     {
-        return $this->move($this->fil->getFil(), static::CONVERTED);
+        return $this->move($this->fil->getFil(), Converter::DIR_TEMP . static::CONVERTED);
     }
 
     /**
@@ -50,7 +48,7 @@ class Flytt
      */
     public function tilStorage(): String
     {
-        return $this->move($this->fil->getFil(), static::STORE);
+        return $this->move($this->fil->getFil(), Converter::DIR_TEMP . static::STORE);
     }
 
 

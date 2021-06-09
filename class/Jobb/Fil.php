@@ -1,6 +1,11 @@
 <?php
 
-namespace UKMNorge\Videoconverter;
+namespace UKMNorge\Videoconverter\Jobb;
+
+use UKMNorge\Videoconverter\Version;
+use UKMNorge\Videoconverter\Versjon\Arkiv;
+use UKMNorge\Videoconverter\Versjon\HD;
+use UKMNorge\Videoconverter\Versjon\Mobil;
 
 class Fil
 {
@@ -28,7 +33,8 @@ class Fil
      *
      * @return Flytt
      */
-    public function flytt() : Flytt{
+    public function flytt(): Flytt
+    {
         return $this->flytt;
     }
 
@@ -53,11 +59,22 @@ class Fil
     }
 
     /**
+     * Hent filnavn uten extension
+     *
+     * @return String
+     */
+    public function getNavnUtenExtension(): String
+    {
+        return rtrim($this->getNavn(), $this->getExtension());
+    }
+
+    /**
      * Hent full filbane (og navn)
      *
      * @return String
      */
-    public function getFil() : String {
+    public function getFil(): String
+    {
         return $this->getBane() . $this->getNavn();
     }
 
@@ -82,7 +99,7 @@ class Fil
      */
     public static function finnFilbane(Eier $eier, Film $film): String
     {
-        return $eier->getSesong() . '/' . $eier->getArrangementId() . '/' . $film->getType() .'/';
+        return $eier->getSesong() . '/' . $eier->getArrangementId() . '/' . $film->getType() . '/';
     }
 
     /**
@@ -115,6 +132,6 @@ class Fil
      */
     public static function finnExtension(String $filnavn): String
     {
-        return rtrim(strtolower(substr($filnavn, strrpos($filnavn, '.'))),'.');
+        return rtrim(strtolower(substr($filnavn, strrpos($filnavn, '.'))), '.');
     }
 }

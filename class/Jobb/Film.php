@@ -1,6 +1,6 @@
 <?php
 
-namespace UKMNorge\Videoconverter;
+namespace UKMNorge\Videoconverter\Jobb;
 
 use Exception;
 use UKMNorge\Videoconverter\Utils\FFProbe;
@@ -88,6 +88,40 @@ class Film
      */
     public function getBredde(): Int {
         return $this->height;
+    }
+
+    /**
+     * Hent størrelsesforholdet mellom bredde og høyde
+     *
+     * @return float
+     */
+    public function getStorrelseForhold(): float {
+        return $this->getBredde() / $this->getHoyde();
+    }
+
+    /**
+     * Beregn bredde for en gitt høyde
+     *
+     * @param Int $hoyde
+     * @return Int
+     */
+    public function getBreddeForHoyde( Int $hoyde ) : Int {
+        $bredde = round( $this->getStorrelseForhold() * $hoyde );
+        # Rund ned til nærmeste partall
+        if( $bredde % 2 != 0 ) {
+            $bredde--;
+        }
+        return $bredde;
+    }
+
+    /**
+     * Hent oppløsningen for en gitt høyde
+     *
+     * @param Int $hoyde
+     * @return String
+     */
+    public function getOpplosningForHoyde( Int $hoyde ) : String {
+        return $this->getBreddeForHoyde( $hoyde ) .'x'. $hoyde;
     }
 
     /**

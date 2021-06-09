@@ -1,6 +1,6 @@
 <?php
 
-namespace UKMNorge\Videoconverter;
+namespace UKMNorge\Videoconverter\Jobb;
 
 class Eier
 {
