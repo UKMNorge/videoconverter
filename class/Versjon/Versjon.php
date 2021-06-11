@@ -7,19 +7,22 @@ use UKMNorge\Videoconverter\Jobb\Flytt;
 use UKMNorge\Videoconverter\Utils\Logger;
 use UKMNorge\Videoconverter\Jobb;
 
-abstract class Versjon
+abstract class Versjon implements VersjonInterface
 {
 
     const AUDIO_SAMPLINGRATE = 44100;
     const EXT = '.mp4';
 
     private $jobb;
-    private $preset;
 
-    public function __construct(Jobb $jobb, String $preset)
+    /**
+     * Opprett et nytt versjonsobjekt
+     *
+     * @param Jobb $jobb
+     */
+    public function __construct(Jobb $jobb)
     {
         $this->jobb = $jobb;
-        $this->preset = $preset;
     }
 
     /**
@@ -43,19 +46,6 @@ abstract class Versjon
     }
 
     /**
-     * Hent hvilket preset som skal brukes
-     * 
-     * Denne kommer fra Convert\First|Second|Archive via Convert\Common
-     *
-     * @return String
-     */
-    public function getPreset(): String
-    {
-        return $this->preset;
-    }
-
-
-    /**
      * Hent full filbane til filen som skal konverteres
      *
      * @return String
@@ -70,7 +60,7 @@ abstract class Versjon
      *
      * @return String
      */
-    protected function getOutputFilePath(): String
+    public function getOutputFilePath(): String
     {
         return Flytt::STORE . $this->getFilnavn();
     }
@@ -80,7 +70,7 @@ abstract class Versjon
      *
      * @return String
      */
-    protected function getX264FilePath(): String
+    public function getX264FilePath(): String
     {
         return Flytt::x264 . $this->getJobb()->getFil()->getNavnUtenExtension() . '_x264data.txt';
     }
@@ -103,10 +93,11 @@ abstract class Versjon
      *
      * @return String
      */
-    protected function getFirstPassLogPath(): String
+    public function getFirstPassLogPath(): String
     {
         return $this->getLogPath() . '_firstpass.txt';
     }
+
     /**
      * Hent temp log path for second pass
      *
@@ -115,6 +106,16 @@ abstract class Versjon
     protected function getSecondPassLogPath(): String
     {
         return $this->getLogPath() . '_secondpass.txt';
+    }
+    
+    /**
+     * Hent temp log path for second pass
+     *
+     * @return String
+     */
+    protected function getImageLogPath(): String
+    {
+        return $this->getLogPath() . '_image.txt';
     }
 
     /**
@@ -174,6 +175,6 @@ abstract class Versjon
      */
     public static function getSuffix(): String
     {
-        return static->getFileSuffix() . static->getFileExt();
+        return static::getFileSuffix() . static::getFileExt();
     }
 }

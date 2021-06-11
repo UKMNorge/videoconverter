@@ -1,6 +1,7 @@
 <?php
 
 use UKMNorge\Videoconverter\Convert\First;
+use UKMNorge\Videoconverter\Trigger;
 
 require_once('inc/autoloader.php');
 
@@ -12,3 +13,5 @@ if( First::isRunning() ) {
 }
 
 First::startNext();
+
+Trigger::nextSecondConvert();

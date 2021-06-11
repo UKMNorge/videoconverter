@@ -37,6 +37,11 @@ class Jobb
     private $id;
 
     /**
+     * @var Array
+     */
+    private $data;
+
+    /**
      * Registrer en konverteringsjobb
      *
      * @param Eier $eier
@@ -151,6 +156,8 @@ class Jobb
             $data->file_path,
             $data->file_name
         );
+
+        $this->data = $data;
     }
 
     /**
@@ -210,5 +217,17 @@ class Jobb
     public function getId(): Int
     {
         return $this->id;
+    }
+
+    /**
+     * Hent all info vi har om filmen
+     * 
+     * Burde kanskje begrense noe hva som gis ut her?
+     *
+     * @return Array
+     */
+    public function getDatabaseData(): array
+    {
+        return $this->data;
     }
 }

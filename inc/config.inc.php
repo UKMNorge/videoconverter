@@ -8,7 +8,7 @@ define('DIR_TEMP', DIR_BASE . 'temp_storage/');
 #define('DIR_TEMP_UPLOAD', DIR_TEMP . 'uploaded/');
 #define('DIR_TEMP_CONVERT', DIR_TEMP . 'convert/');        // File in conversion atm
 #define('DIR_TEMP_CONVERTED', DIR_TEMP . 'converted/');    // The file after second pass
-define('DIR_TEMP_FASTSTART', DIR_TEMP . 'faststart/');    // The file after QT-FASTSTART
+#define('DIR_TEMP_FASTSTART', DIR_TEMP . 'faststart/');    // The file after QT-FASTSTART
 #define('DIR_TEMP_STORE', DIR_TEMP . 'store/');            // The file after QT-FASTSTART
 define('DIR_TEMP_LOG', DIR_TEMP . 'log/');
 #define('DIR_TEMP_x264', DIR_TEMP . 'x264/');

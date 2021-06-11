@@ -6,37 +6,55 @@ use Exception;
 use UKMNorge\Database\SQL\Update;
 use UKMNorge\Videoconverter\Converter;
 use UKMNorge\Videoconverter\Jobb;
-use UKMNorge\Videoconverter\Versjon\HD;
-use UKMNorge\Videoconverter\Versjon\Mobil;
 
-class First extends Common {
+class First extends Common
+{
     const PRESET = 'ultrafast';
-    const PRESET_MOBILE = 'ultrafast';
     const DB_FIELD = 'status_first_convert';
 
-    public static function getNextQueryWhere() : String {
+    /**
+     * WHERE-parameter som brukes for å finne neste konverteringsjobb
+     *
+     * @return String
+     */
+    public static function getNextQueryWhere(): String
+    {
         return "`status_progress` = 'registered'";
     }
 
     /**
-     * @param Jobb $jobb 
-     * @return void 
+     * Finnes det filmer som er registrert, men ikke førstegangs-konvertert?
+     * 
+     * Topprioritet for videoconverteren er å tilgjengeliggjøre mest mulig innhold,
+     * og alle andre får dermed vente til alle filmer er førstegangs-konvertert.
+     *
+     * @return boolean
      */
-    static function start( Jobb $jobb ) : void {
-        parent::start($jobb);
+    public static function hasTodo(): bool
+    {
+        $query = new Query(
+            "SELECT `id`
+            FROM `" . Converter::TABLE . "`
+            WHERE `status_progress` = 'registered'
+            LIMIT 1"
+        );
 
-        $query = new Update(Converter::TABLE, ['id' => $jobb->getId()]);
-        $query->add('file_name_store', $jobb->getFil()->getNavnUtenExtension() .'.mp4');
-        $query->run();
+        return !!$query->getField();
     }
 
     /**
-     * Hvilke versjoner vi skal gjøre i denne runden
-     *
-     * @return Array<Versjon>
+     * I tillegg til å logge start, er det FirstConvert sin jobb
+     * å lagre filnavn som senere brukes av lagringsfunksjonene
+     * 
+     * @param Jobb $jobb 
+     * @return void 
      */
-    public static function getVersjoner( Jobb $jobb ) : array {
-        return [ new HD( $jobb, static::PRESET ), new Mobil( $jobb, static::PRESET_MOBILE ) ];
-    }
+    static function start(Jobb $jobb): void
+    {
+        parent::start($jobb);
 
+        $query = new Update(Converter::TABLE, ['id' => $jobb->getId()]);
+        $query->add('file_name_store', $jobb->getFil()->getNavnUtenExtension() . '.mp4');
+        $query->run();
+    }
 }

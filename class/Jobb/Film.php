@@ -134,6 +134,25 @@ class Film
     }
 
     /**
+     * Hvor i tidslinjen skal vi hente bildet fra?
+     * 
+     * @return Int
+     */
+    public function getBildePosisjon() : Int {
+        if( $this->getVarighet() > 8 ) {
+            return 8;
+        }
+
+        $position = floor( $this->getVarighet() * 0,1 );
+
+        if( $position < 1 ) {
+            return 1;
+        }
+        
+        return $position;
+    }
+
+    /**
      * Hent filmens format (yuv-something stort set)
      *
      * @return String

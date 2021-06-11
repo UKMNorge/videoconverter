@@ -15,6 +15,16 @@ class Trigger
     {
         return static::request('convert_first');
     }
+    
+    /**
+     * Start andregangskonvertering
+     *
+     * @return boolean
+     */
+    public static function nextSecondConvert(): bool
+    {
+        return static::request('convert_second');
+    }
 
 
     /**

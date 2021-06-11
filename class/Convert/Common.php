@@ -10,11 +10,14 @@ use UKMNorge\Videoconverter\Converter;
 use UKMNorge\Videoconverter\Trigger;
 use UKMNorge\Videoconverter\Utils\Logger;
 use UKMNorge\Videoconverter\Utils\Timer;
+use UKMNorge\Videoconverter\Versjon\Bilde;
+use UKMNorge\Videoconverter\Versjon\HD;
+use UKMNorge\Videoconverter\Versjon\Mobil;
+use UKMNorge\Videoconverter\Versjon\Versjon;
 
 abstract class Common implements ConvertInterface
 {
     private $timer;
-
     /**
      * Kjører det allerede en konverteringsjobb av denne typen?
      *
@@ -67,17 +70,59 @@ abstract class Common implements ConvertInterface
             static::ffmpeg( $jobb, $versjon );
             Logger::log( $timer_versjon->__toString() );
         }
+        Logger::log('Alle versjoner konvertert');
 
-        static::cleanup();
+        # Slett midlertidig-filer (x264)
+        static::cleanup( $jobb );
+
+        # Oppdater databasen med ferdig
         static::completed( $jobb );
 
+        # Prøv å starte lagringen
         Trigger::store();
 
         return true;
     }
 
+    /**
+     * Slett filer som bør fjernes
+     *
+     * @param Jobb $jobb
+     * @return void
+     */
+    public static function cleanup( Jobb $jobb ) {
+        foreach( static::getFilesToDelete( $jobb ) as $fil ) {
+            if( file_exists( $fil ) ) {
+                unlink($fil);
+            }
+        }
+    }
+
+    /**
+     * Finn filer som skal slettes
+     *
+     * @param Jobb $jobb
+     * @return array<String>
+     */
+    public static function getFilesToDelete( Jobb $jobb ): array {
+        $versjon = new HD( $jobb );
+
+        return [
+            $versjon->getX264FilePath(),
+            $versjon->getX264FilePath().'-0.log',
+            $versjon->getX264FilePath().'-0.log.mbtree'
+        ];
+    }
+
+    /**
+     * Gjør ffmpeg-konverteringer
+     *
+     * @param Jobb $jobb
+     * @param [type] $versjon
+     * @return void
+     */
     public static function ffmpeg( Jobb $jobb, $versjon ) {
-        $kommando = $versjon->getFFmpegKall();
+        $kommando = $versjon->getFFmpegKall( static::PRESET );
 
         Logger::log('FFMPEG: '. $kommando);
         $return_code = null;
@@ -96,8 +141,13 @@ abstract class Common implements ConvertInterface
         }
     }
 
+    /**
+     * Oppdater databasen med at jobben er gjort
+     *
+     * @param Jobb $jobb
+     * @return void
+     */
     public static function completed( Jobb $jobb ) : void {
-        
         $query = new Update(Converter::TABLE, ['id' => $jobb->getId()]);
         $query->add(static::DB_FIELD, 'complete');
         $query->add('status_progress', 'store');
@@ -159,5 +209,18 @@ abstract class Common implements ConvertInterface
             );
         }
         return true;
+    }
+
+    /**
+     * Hvilke versjoner vi skal gjøre i denne runden
+     *
+     * @return Array<Versjon>
+     */
+    public static function getVersjoner( Jobb $jobb ) : array {
+        return [ 
+            new HD( $jobb ),
+            new Mobil( $jobb ),
+            new Bilde( $jobb )
+        ];
     }
 }

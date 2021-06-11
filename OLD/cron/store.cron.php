@@ -1,48 +1,5 @@
 <?php
-// SCRIPT WILL FINISH IF USER LEAVES THE PAGE
-// CONVERT.INC.PHP TRIGGERS THIS CRON BY CURL(timeout: 2)
-ignore_user_abort(true);
 
-# Lagt til 15. mai 2016 for å overføre avslutningsshow UKM Oslo 2016 - stor fil
-ini_set('max_execution_time', 50);
-
-
-require_once('UKMconfig.inc.php');
-require_once('../inc/config.inc.php');
-require_once('../inc/functions.inc.php');
-
-// IF ALREADY TRANSFERRING ONE, TAKE A NAP
-$test = "SELECT `id` FROM `ukmtv`
-        WHERE `status_progress` = 'transferring'
-        ORDER BY `id` ASC
-        LIMIT 1";
-$testres = mysql_query( $test );
-if( mysql_num_rows( $testres ) > 0 )
-    die('Already transferring one film. Waiting for this to finish');
-
-// FIND NEXT TRANSFERJOB
-$sql = "SELECT * FROM `ukmtv`
-        WHERE `status_progress` = 'store'
-        ORDER BY `id` ASC
-        LIMIT 1";
-
-$res = mysql_query( $sql );
-$cron = mysql_fetch_assoc( $res );
-if(!$cron)
-    die('Nothing to store!');
-
-define('LOG_SCRIPT_NAME', 'VIDEO STORAGE');
-define('CRON_ID', $cron['id']);
-ini_set("error_log", DIR_LOG . 'cron_'. CRON_ID .'.log');
-logg('START');
-
-// Settings status to transferring
-// End of script will set status back to
-// a) converting (if status_final_convert not is complete)
-// b) archive (if status_final_convert is complete)
-// Script convert_final.cron will follow up on case a
-// Script archive.cron will follow up on case b
-ukmtv_update('status_progress', 'transferring', $cron['id']);
 
 ini_set('display_errors', true);
 require_once('../inc/smartcore.fileCurl.php');

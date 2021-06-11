@@ -10,7 +10,7 @@ class Mobil extends Versjon
     const FILE_ID = '_mobile';
     const HEIGHT = 480;
 
-    public function getFFmpegKall(): String
+    public function getFFmpegKall( String $preset): String
     {
         return
             ####### FIRST PASS #######
@@ -29,7 +29,7 @@ class Mobil extends Versjon
             . '-bt ' . (static::VIDEO_BITRATE * 1.5) . 'k '     # +/- target bitrate
             . '-b:v ' . static::VIDEO_BITRATE . 'k '            # Target bitrate basert på UKM-tabell
             . '-c:v libx264 '                                   # Bruk videocodec libx264
-            . '-preset ' . $this->getPreset() . ' '             # Mest detaljerte preset (placebo er ikke verdt forskjellen)
+            . '-preset ' . $preset . ' '                        # Mest detaljerte preset (placebo er ikke verdt forskjellen)
             . '-profile:v baseline -level 3.1 '                 # Alle fleste telefoner (http://en.wikipedia.org/wiki/H.264#Levels)
             . '-r 25 '                                          # Tvinger 25fps
             . '-pass 1 '                                        # Kjør first-pass
@@ -55,7 +55,7 @@ class Mobil extends Versjon
             . '-bt ' . (static::VIDEO_BITRATE * 1.5) . 'k '     # +/- target bitrate
             . '-b:v ' . static::VIDEO_BITRATE . 'k '            # Target bitrate basert på UKM-tabell
             . '-c:v libx264 '                                   # Bruk videocodec libx264
-            . '-preset ' . $this->getPreset() . ' '             # Mest detaljerte preset (placebo er ikke verdt forskjellen)
+            . '-preset ' . $preset . ' '                        # Mest detaljerte preset (placebo er ikke verdt forskjellen)
             . '-profile:v baseline -level 3.1 '                 # Alle fleste telefoner (http://en.wikipedia.org/wiki/H.264#Levels)
             . '-r 25 '                                          # Tvinger 25fps
             . '-pass 2 '                                        # Kjør second-pass
