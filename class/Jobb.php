@@ -3,9 +3,9 @@
 namespace UKMNorge\Videoconverter;
 
 use Exception;
-use UKMNorge\Database\SQL\Insert;
-use UKMNorge\Database\SQL\Update;
-use UKMNorge\Database\SQL\Query;
+use UKMNorge\Videoconverter\Database\Query;
+use UKMNorge\Videoconverter\Database\Insert;
+use UKMNorge\Videoconverter\Database\Update;
 
 use UKMNorge\Videoconverter\Jobb\Eier;
 use UKMNorge\Videoconverter\Jobb\Film;
@@ -56,7 +56,7 @@ class Jobb
     {
         // Oppretter jobben
 
-        $query = new Insert(Converter::TABLE);
+        $query = new Insert(Converter::TABLE, [], 'videoconverter');
         $query->add('blog_id', $eier->getBloggId());
         $query->add('pl_id', $eier->getArrangementId());
         $query->add('season', $eier->getSesong());
@@ -129,7 +129,8 @@ class Jobb
             ",
             [
                 'id' => $cron_id
-            ]
+            ],
+            'videoconverter'
         );
         $data = $query->getRow();
 

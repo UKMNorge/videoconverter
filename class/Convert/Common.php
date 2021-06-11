@@ -3,8 +3,8 @@
 namespace UKMNorge\Videoconverter\Convert;
 
 use Exception;
-use UKMNorge\Database\SQL\Query;
-use UKMNorge\Database\SQL\Update;
+use UKMNorge\Videoconverter\Database\Query;
+use UKMNorge\Videoconverter\Database\Update;
 use UKMNorge\Videoconverter\Jobb;
 use UKMNorge\Videoconverter\Converter;
 use UKMNorge\Videoconverter\Trigger;
@@ -30,7 +30,9 @@ abstract class Common implements ConvertInterface
             "SELECT `id` FROM `ukmtv`
 		    WHERE `status_progress` = 'converting'
 		    AND `" . static::DB_FIELD . "` = 'converting'
-            LIMIT 1"
+            LIMIT 1",
+            [],
+            'videoconverter'
         );
 
         return !!$query->getField();
@@ -66,7 +68,7 @@ abstract class Common implements ConvertInterface
 
         # Kjør ffmpeg på de ulike utgavene
         foreach( static::getVersjoner( $jobb ) as $versjon ) {
-            $timer_versjon = new Timer( $versjon::class );
+            $timer_versjon = new Timer( get_class($versjon) );
             static::ffmpeg( $jobb, $versjon );
             Logger::log( $timer_versjon->__toString() );
         }
@@ -136,7 +138,7 @@ abstract class Common implements ConvertInterface
             $jobb->saveStatus('crashed');
             Logger::logg('FAILURE! END OF CRON');
             throw new Exception(
-                'Konvertering feilet '. $versjon::class .' ('. $jobb->getId() .')'
+                'Konvertering feilet '. get_class($versjon) .' ('. $jobb->getId() .')'
             );
         }
     }
@@ -166,7 +168,9 @@ abstract class Common implements ConvertInterface
             "SELECT `id` FROM `" . Converter::TABLE . "`
             " . static::getNextQueryWhere() . "
             ORDER BY `id` ASC
-            LIMIT 1"
+            LIMIT 1",
+            [],
+            'videoconverter'
         );
 
         $cron_id = $query->getField();
@@ -205,7 +209,7 @@ abstract class Common implements ConvertInterface
     {
         if (empty($jobb->getFilm()->getBredde()) || empty($jobb->getFilm()->getHoyde())) {
             throw new Exception(
-                Logger::notify('Mangler videostørrelser, og konvertering har derfor stoppet');
+                Logger::notify('Mangler videostørrelser, og konvertering har derfor stoppet')
             );
         }
         return true;

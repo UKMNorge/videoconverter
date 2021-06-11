@@ -1,6 +1,9 @@
 <?php
 
-use UKMNorge\Database\SQL\DB;
+use UKMNorge\Videoconverter\Database\Query;
+use UKMNorge\Videoconverter\Database\Insert;
+
+ini_set('display_errors', true);
 
 # Autoloader for UKMlib
 require_once('UKM/Autoloader.php');
@@ -8,7 +11,7 @@ require_once('UKM/Autoloader.php');
 # Autoloader for UKMNorge\Videoconverter
 spl_autoload_register(function ($class_name) {
     if (strpos($class_name, 'UKMNorge\Videoconverter\\') === 0) {
-        $file = dirname(__FILE__) . str_replace(
+        $file = dirname(dirname(__FILE__)) .'/class/' . str_replace(
             ['\\', 'UKMNorge/Videoconverter/'],
             ['/', ''],
             $class_name
@@ -21,6 +24,3 @@ spl_autoload_register(function ($class_name) {
         }
     }
 });
-
-# Bruk riktig database
-DB::setDatabase('videoconverter');

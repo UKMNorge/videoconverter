@@ -3,7 +3,8 @@
 namespace UKMNorge\Videoconverter\Convert;
 
 use Exception;
-use UKMNorge\Database\SQL\Update;
+use UKMNorge\Videoconverter\Database\Query;
+use UKMNorge\Videoconverter\Database\Update;
 use UKMNorge\Videoconverter\Converter;
 use UKMNorge\Videoconverter\Jobb;
 

@@ -3,7 +3,10 @@
 use UKMNorge\Videoconverter\Convert\First;
 use UKMNorge\Videoconverter\Convert\Second;
 
-require_once('inc/autoloader.php');
+require_once('../inc/autoloader.php');
+
+
+die('please hold');
 
 // SCRIPT WILL FINISH IF USER LEAVES THE PAGE
 ignore_user_abort(true);

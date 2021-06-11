@@ -13,7 +13,7 @@ class Converter
     const TABLE = 'ukmtv';
 
     const DIR_BASE = '/var/www/videoconverter/';
-    const DIR_TEMP = static::DIR_BASE . 'temp_storage/';
+    const DIR_TEMP = self::DIR_BASE . 'temp_storage/';
 
     /**
      * Hent endpoint for mottak av filer til lagringsserver

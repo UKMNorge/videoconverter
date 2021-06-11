@@ -3,9 +3,9 @@
 namespace UKMNorge\Videoconverter\Versjon;
 
 use UKMNorge\Videoconverter\Converter;
+use UKMNorge\Videoconverter\Jobb;
 use UKMNorge\Videoconverter\Jobb\Flytt;
 use UKMNorge\Videoconverter\Utils\Logger;
-use UKMNorge\Videoconverter\Jobb;
 
 abstract class Versjon implements VersjonInterface
 {
@@ -103,7 +103,7 @@ abstract class Versjon implements VersjonInterface
      *
      * @return String
      */
-    protected function getSecondPassLogPath(): String
+    public function getSecondPassLogPath(): String
     {
         return $this->getLogPath() . '_secondpass.txt';
     }

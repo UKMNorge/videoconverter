@@ -5,8 +5,8 @@ namespace UKMNorge\Videoconverter\Store;
 use Exception;
 use UKMNorge\Http\Curl;
 use UKMNorge\Http\CurlFileUploader;
-use UKMNorge\Database\SQL\Query;
 use UKMNorge\Videoconverter\Converter;
+use UKMNorge\Videoconverter\Database\Query;
 use UKMNorge\Videoconverter\Jobb;
 use UKMNorge\Videoconverter\Utils\Logger;
 use UKMNorge\Videoconverter\Versjon\Versjon;
@@ -27,7 +27,9 @@ class Store
         $query = new Query(
             "SELECT `id` FROM `ukmtv`
             WHERE `status_progress` = 'transferring'
-            LIMIT 1"
+            LIMIT 1",
+            [],
+            'videoconverter'
         );
 
         return !!$query->getField();
@@ -273,7 +275,9 @@ class Store
             "SELECT * FROM `" . Converter::TABLE . "`
             WHERE `status_progress` = 'store'
             ORDER BY `id` ASC
-            LIMIT 1"
+            LIMIT 1",
+            [],
+            'videoconverter'
         );
 
         $cron_id = $query->getField();

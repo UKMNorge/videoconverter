@@ -2,8 +2,6 @@
 
 namespace UKMNorge\Videoconverter\Versjon;
 
-use UKMNorge\Videoconverter\Jobb;
-
 class Bilde extends Versjon
 {
 

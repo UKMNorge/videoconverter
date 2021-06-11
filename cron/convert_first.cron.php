@@ -3,7 +3,7 @@
 use UKMNorge\Videoconverter\Convert\First;
 use UKMNorge\Videoconverter\Trigger;
 
-require_once('inc/autoloader.php');
+require_once('../inc/autoloader.php');
 
 // SCRIPT WILL FINISH IF USER LEAVES THE PAGE
 ignore_user_abort(true);

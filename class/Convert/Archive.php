@@ -2,7 +2,7 @@
 
 namespace UKMNorge\Videoconverter\Convert;
 
-use UKMNorge\Database\SQL\Query;
+use UKMNorge\Videoconverter\Database\Query;
 use UKMNorge\Videoconverter\Jobb;
 use UKMNorge\Videoconverter\Versjon\Arkiv;
 use UKMNorge\Videoconverter\Versjon\Bilde;
