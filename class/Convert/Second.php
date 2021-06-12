@@ -17,7 +17,7 @@ class Second extends Common {
      * @return String
      */
     public static function getNextQueryWhere() : String {
-        return "`status_progress` = 'archive'
+        return "WHERE `status_progress` = 'archive'
 		    AND (`status_archive` IS NULL OR `status_archive` = 'convert')";
     }
 

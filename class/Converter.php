@@ -12,6 +12,8 @@ class Converter
 
     const TABLE = 'ukmtv';
 
+    const REMOTE_SERVER = 'https://video.'. UKM_HOSTNAME;
+
     const DIR_BASE = '/var/www/videoconverter/';
     const DIR_TEMP = self::DIR_BASE . 'temp_storage/';
 
@@ -22,7 +24,7 @@ class Converter
      */
     public static function getStorageServerEndpoint(): String
     {
-        return REMOTE_SERVER . '/receive.php';
+        return static::REMOTE_SERVER . '/receive.php';
     }
 
     /**
@@ -48,6 +50,18 @@ class Converter
             new HD($jobb),
             new Mobil($jobb),
             new Bilde($jobb)
+        ];
+    }
+
+    /**
+     * Hvilke "typer" filmer er støttet for opplasting
+     *
+     * @return array<string>
+     */
+    public static function getSupportedVideoTypes() : array {
+        return [
+            'reportasje',
+            'innslag'
         ];
     }
 }

@@ -39,7 +39,7 @@ class Jobb
     /**
      * @var Array
      */
-    private $data;
+    private $data;    
 
     /**
      * Registrer en konverteringsjobb
@@ -52,7 +52,7 @@ class Jobb
      * 
      * @return Jobb
      */
-    public static function registrer(Eier $eier, Film $film, String $filbane): Jobb
+    public static function registrer(Eier $eier, Film $film, String $file): Jobb
     {
         // Oppretter jobben
 
@@ -74,26 +74,25 @@ class Jobb
         }
 
         $jobb = new Jobb($cron_id);
-
         // BEREGNER FILBANER
         // Siden denne er avhengig av JobbId (cron_id), 
         // kjøres det en update-query nedenfor
         $filbane = Fil::finnFilbane($eier, $film);
-        $filnavn = Fil::finnFilnavn($eier, $film, $cron_id, Fil::finnExtension($filbane));
+        $filnavn = Fil::finnFilnavn($eier, $film, $cron_id, Fil::finnExtension($file));
         $jobb->fil = new Fil($filbane, $filnavn);
-
+        
         // HENTER DETALJER OM FILFORMAT
-        $jobb->getFilm()->beregnDetaljerFraFil($jobb->getFil());
-
-        // FLYTT FILEN
-        $jobb->getFil()->flytt()->tilConvert();
+        $jobb->getFilm()->beregnDetaljerFraFil($file);
+        
+        // FLYTT FILEN TIL CONVERT-MAPPA
+        $jobb->getFil()->flytt()->tilConvert( $file );
 
         // OPPDATERER DATABASEN
         $update = new Update(Converter::TABLE, ['id' => $cron_id]);
 
         $update->add('file_name',       $jobb->getFil()->getNavn());
         $update->add('file_path',       $jobb->getFil()->getBane());
-        $update->add('file_type',       '.' . $jobb->getFil()->getExtension());
+        $update->add('file_type',       $jobb->getFil()->getExtension());
 
         $update->add('file_width',      $jobb->getFilm()->getBredde());
         $update->add('file_height',     $jobb->getFilm()->getHoyde());
@@ -101,6 +100,7 @@ class Jobb
         $update->add('pixel_format',    $jobb->getFilm()->getPikselFormat());
 
         $update->add('status_progress', 'registered');
+        $update->add('file_name_store', $jobb->getFil()->getNavnUtenExtension() . '.mp4');
 
         $res = $update->run();
 
@@ -132,7 +132,7 @@ class Jobb
             ],
             'videoconverter'
         );
-        $data = $query->getRow();
+        $data = $query->getArray();
 
         if (!$data) {
             throw new Exception(
@@ -140,22 +140,23 @@ class Jobb
             );
         }
 
-        $this->id = (int) $data->id;
+        $this->id = (int) $data['id'];
 
         $this->eier = new Eier(
-            (int) $data->blog_id,
-            (int) $data->pl_id,
-            (int) $data->season
+            (int) $data['blog_id'],
+            (int) $data['pl_id'],
+            (int) $data['season']
         );
 
         $this->film = new Film(
-            $data->type,
-            $data->b_id
+            $data['type'],
+            $data['b_id'],
+            $data
         );
 
         $this->fil = new Fil(
-            $data->file_path,
-            $data->file_name
+            $data['file_path'],
+            $data['file_name']
         );
 
         $this->data = $data;

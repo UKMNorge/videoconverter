@@ -121,7 +121,7 @@ class Fil
             ) .
             $film->getInnslagId() .
             '_cron_' . $cron_id .
-            '.' . $extension;
+            $extension;
     }
 
     /**

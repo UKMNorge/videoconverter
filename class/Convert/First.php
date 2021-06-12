@@ -4,9 +4,7 @@ namespace UKMNorge\Videoconverter\Convert;
 
 use Exception;
 use UKMNorge\Videoconverter\Database\Query;
-use UKMNorge\Videoconverter\Database\Update;
 use UKMNorge\Videoconverter\Converter;
-use UKMNorge\Videoconverter\Jobb;
 
 class First extends Common
 {
@@ -20,7 +18,7 @@ class First extends Common
      */
     public static function getNextQueryWhere(): String
     {
-        return "`status_progress` = 'registered'";
+        return "WHERE `status_progress` = 'registered'";
     }
 
     /**
@@ -41,21 +39,5 @@ class First extends Common
         );
 
         return !!$query->getField();
-    }
-
-    /**
-     * I tillegg til å logge start, er det FirstConvert sin jobb
-     * å lagre filnavn som senere brukes av lagringsfunksjonene
-     * 
-     * @param Jobb $jobb 
-     * @return void 
-     */
-    static function start(Jobb $jobb): void
-    {
-        parent::start($jobb);
-
-        $query = new Update(Converter::TABLE, ['id' => $jobb->getId()]);
-        $query->add('file_name_store', $jobb->getFil()->getNavnUtenExtension() . '.mp4');
-        $query->run();
     }
 }

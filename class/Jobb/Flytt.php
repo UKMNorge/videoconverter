@@ -6,6 +6,7 @@ use UKMNorge\Videoconverter\Converter;
 
 class Flytt
 {
+    const INBOX = 'inbox/';
     const UPLOAD = 'uploaded/';
     const CONVERT = 'convert/';
     const CONVERTED = 'converted/';
@@ -24,11 +25,12 @@ class Flytt
     /**
      * Flytt til temp_storage/convert
      *
+     * @param String $current_path
      * @return String
      */
-    public function tilConvert(): String
+    public function tilConvert( String $current_path ): String
     {
-        return $this->move($this->fil->getFil(), Converter::DIR_TEMP . static::CONVERT);
+        return $this->move($current_path, Converter::DIR_TEMP . static::CONVERT);
     }
 
     /**
@@ -36,9 +38,9 @@ class Flytt
      *
      * @return String
      */
-    public function tilConverted(): String
+    public function tilConverted( String $current_path ): String
     {
-        return $this->move($this->fil->getFil(), Converter::DIR_TEMP . static::CONVERTED);
+        return $this->move($current_path, Converter::DIR_TEMP . static::CONVERTED);
     }
 
     /**
@@ -46,9 +48,9 @@ class Flytt
      *
      * @return String
      */
-    public function tilStorage(): String
+    public function tilStorage( String $current_path ): String
     {
-        return $this->move($this->fil->getFil(), Converter::DIR_TEMP . static::STORE);
+        return $this->move($current_path, Converter::DIR_TEMP . static::STORE);
     }
 
 
@@ -60,8 +62,8 @@ class Flytt
      */
     private function move(String $origin, String $destination): String
     {
-        $origin .= $this->fil->getNavn();
-        rename($origin, $destination);
+        $destination .= $this->fil->getNavn();
+        copy($origin, $destination);
         return $destination;
     }
 }

@@ -24,7 +24,7 @@ class Film
      * @param 'reportasje'|'innslag' $type 
      * @param Int $innslag_id
      */
-    public function __construct(String $type, Int $innslag_id)
+    public function __construct(String $type, Int $innslag_id, Array $data = null)
     {
         if (!in_array($type, ['reportasje', 'innslag'])) {
             throw new Exception(
@@ -33,6 +33,13 @@ class Film
         }
         $this->type = $type;
         $this->innslag_id = $innslag_id;
+
+        if( is_array($data) ) {
+            $this->height = $data['file_width'];
+            $this->width = $data['file_height'];
+            $this->duration = $data['file_duration'];
+            $this->pikselformat = $data['pixel_format'];
+        }
     }
 
     /**
@@ -62,14 +69,14 @@ class Film
      * @param Fil $fil
      * @return void
      */
-    public function beregnDetaljerFraFil( Fil $fil ): void {
-        $dimensions = FFProbe::getDimensions( $fil->getFil() );
+    public function beregnDetaljerFraFil( String $file ): void {
+        $dimensions = FFProbe::getDimensions( $file );
         $this->width = (int) $dimensions['width'];
         $this->height = (int) $dimensions['height'];
 
-        $this->duration = (int) FFProbe::getDuration($fil->getFil());
+        $this->duration = (int) FFProbe::getDuration($file);
         
-        $this->pikselformat = FFProbe::getFormat($fil->getFil());
+        $this->pikselformat = FFProbe::getFormat($file);
     }
 
     /**
@@ -78,7 +85,7 @@ class Film
      * @return int
      */
     public function getHoyde(): Int {
-        return $this->width;
+        return $this->height;
     }
 
     /**
@@ -87,7 +94,7 @@ class Film
      * @return Int
      */
     public function getBredde(): Int {
-        return $this->height;
+        return $this->width;
     }
 
     /**

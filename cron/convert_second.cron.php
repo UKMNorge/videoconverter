@@ -5,9 +5,6 @@ use UKMNorge\Videoconverter\Convert\Second;
 
 require_once('../inc/autoloader.php');
 
-
-die('please hold');
-
 // SCRIPT WILL FINISH IF USER LEAVES THE PAGE
 ignore_user_abort(true);
 
@@ -19,4 +16,11 @@ if( First::hasTodo() ) {
     die('There\'s a queue for first convert. Making content available is the top priority.');
 }
 
-Second::startNext();
+
+# Hvis vi har noe som skal gjøres, gjør det
+if( Second::hasTodo() ) {
+    Second::startNext();
+    #Trigger::nextSecondConvert();
+}
+
+echo 'Success!';

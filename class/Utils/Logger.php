@@ -69,7 +69,7 @@ class Logger {
      * @param String $path
      * @return void
      */
-    public static function setLocation( String $path ) : void {
+    public static function setLocation( String $path ) : void { 
         ini_set('error_log', Converter::DIR_BASE . static::DIR_LOG . basename($path) . '.log');
     }
 }

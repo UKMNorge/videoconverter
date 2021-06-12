@@ -52,7 +52,7 @@ abstract class Versjon implements VersjonInterface
      */
     protected function getInputFilePath(): String
     {
-        return Flytt::CONVERT . $this->getJobb()->getFil()->getNavn();
+        return Converter::DIR_TEMP . Flytt::CONVERT . $this->getJobb()->getFil()->getNavn();
     }
 
     /**
@@ -62,7 +62,7 @@ abstract class Versjon implements VersjonInterface
      */
     public function getOutputFilePath(): String
     {
-        return Flytt::STORE . $this->getFilnavn();
+        return Converter::DIR_TEMP . Flytt::STORE . $this->getFilnavn();
     }
 
     /**
@@ -72,7 +72,7 @@ abstract class Versjon implements VersjonInterface
      */
     public function getX264FilePath(): String
     {
-        return Flytt::x264 . $this->getJobb()->getFil()->getNavnUtenExtension() . '_x264data.txt';
+        return Converter::DIR_TEMP . Flytt::x264 . $this->getJobb()->getFil()->getNavnUtenExtension() . '_x264data.txt';
     }
 
     /**
@@ -165,7 +165,7 @@ abstract class Versjon implements VersjonInterface
      */
     public static function getFileExt(): String
     {
-        return static::FILE_EXT;
+        return static::EXT;
     }
 
     /**

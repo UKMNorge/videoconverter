@@ -17,7 +17,7 @@ use UKMNorge\Videoconverter\Versjon\Versjon;
 
 abstract class Common implements ConvertInterface
 {
-    private $timer;
+    protected static $timer;
     /**
      * Kjører det allerede en konverteringsjobb av denne typen?
      *
@@ -136,9 +136,11 @@ abstract class Common implements ConvertInterface
         if( $return_code != 0 ) {
             Logger::notify('FAILED! ERROR discovered, set status = "crashed" and move on');
             $jobb->saveStatus('crashed');
-            Logger::logg('FAILURE! END OF CRON');
+            
             throw new Exception(
-                'Konvertering feilet '. get_class($versjon) .' ('. $jobb->getId() .')'
+                Logger::log(
+                    'Konvertering feilet '. get_class($versjon) .' ('. $jobb->getId() .')'
+                )
             );
         }
     }
@@ -172,7 +174,6 @@ abstract class Common implements ConvertInterface
             [],
             'videoconverter'
         );
-
         $cron_id = $query->getField();
 
         if (!$cron_id) {

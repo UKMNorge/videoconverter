@@ -54,7 +54,7 @@ class Store
 
         # Overfør de ulike utgavene av filen
         foreach (Converter::getVersjoner($jobb) as $versjon) {
-            Logger::log('SEND VERSJON ' . $versjon::class . ' TIL ' .  Converter::getStorageServerEndpoint());
+            Logger::log('SEND VERSJON ' . get_class($versjon) . ' TIL ' .  Converter::getStorageServerEndpoint());
             static::transfer($versjon);
         }
 
@@ -193,12 +193,12 @@ class Store
             $rapport = json_decode($result[1]);
 
             if ($rapport->success) {
-                Logger::log($versjon::class . ' lagret');
+                Logger::log(get_class($versjon) . ' lagret');
                 return true;
             }
             $versjon->getJobb()->saveStatus('crashed');
             throw new Exception(
-                Logger::notify('Kunne ikke lagre ' . $versjon::class)
+                Logger::notify('Kunne ikke lagre ' . get_class($versjon))
             );
         }
 
@@ -217,7 +217,7 @@ class Store
     private static function getFileDataArray(Versjon $versjon): array
     {
         $timestamp = time();
-        $file_hash = hash_file('sha265', $versjon->getOutputFilePath());
+        $file_hash = hash_file('sha256', $versjon->getOutputFilePath());
         $signature = static::sign($file_hash, $versjon, $timestamp);
 
         return [
