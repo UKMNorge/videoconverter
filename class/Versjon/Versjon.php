@@ -2,6 +2,7 @@
 
 namespace UKMNorge\Videoconverter\Versjon;
 
+use Exception;
 use UKMNorge\Videoconverter\Converter;
 use UKMNorge\Videoconverter\Jobb;
 use UKMNorge\Videoconverter\Jobb\Flytt;
@@ -12,6 +13,7 @@ abstract class Versjon implements VersjonInterface
 
     const AUDIO_SAMPLINGRATE = 44100;
     const EXT = '.mp4';
+    const FFMPEG = true;
 
     private $jobb;
 
@@ -176,5 +178,33 @@ abstract class Versjon implements VersjonInterface
     public static function getSuffix(): String
     {
         return static::getFileSuffix() . static::getFileExt();
+    }
+
+    /**
+     * Er denne versjonen en ffmpeg-versjon?
+     * 
+     * I motsetning til filer med annen algoritme
+     *
+     * @return boolean
+     */
+    public static function erFFmpegVersjon() : bool {
+        return static::FFMPEG;
+    }
+
+    /**
+     * Utfør kommando for denne versjonen
+     * (gitt at dette ikke er ffmpeg-versjon)
+     *
+     * @param Jobb $jobb
+     * @throws Exception
+     * @return void
+     */
+    public function execute( Jobb $jobb ) {
+        throw new Exception(
+            Logger::log(
+                'Execute-funksjonen er ikke implementert for '.
+                get_called_class()
+            )
+        );
     }
 }

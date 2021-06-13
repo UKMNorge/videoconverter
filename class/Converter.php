@@ -16,6 +16,7 @@ class Converter
 
     const DIR_BASE = '/var/www/videoconverter/';
     const DIR_TEMP = self::DIR_BASE . 'temp_storage/';
+    const DIR_ARCHIVE = self::DIR_BASE . 'MNT_archive_at_digark/UKMTV/';
 
     /**
      * Hent endpoint for mottak av filer til lagringsserver

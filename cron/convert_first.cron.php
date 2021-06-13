@@ -19,4 +19,4 @@ if( First::hasTodo() ) {
     Trigger::nextSecondConvert();
 }
 
-echo 'Success!';
+die('Success!');

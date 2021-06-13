@@ -7,6 +7,7 @@ use UKMNorge\Videoconverter\Jobb;
 use UKMNorge\Videoconverter\Versjon\Arkiv;
 use UKMNorge\Videoconverter\Versjon\Bilde;
 use UKMNorge\Videoconverter\Versjon\HD;
+use UKMNorge\Videoconverter\Versjon\Metadata;
 use UKMNorge\Videoconverter\Versjon\Mobil;
 
 class Archive extends Common
@@ -21,7 +22,8 @@ class Archive extends Common
      */
     public static function getNextQueryWhere(): String
     {
-        return "`status_progress` = 'registered'";
+        return "WHERE `status_progress` = 'archive'
+        AND (`status_archive` IS NULL OR `status_archive` = 'convert')";
     }
 
     /**
@@ -51,7 +53,8 @@ class Archive extends Common
     {
         return [
             new Arkiv($jobb, static::PRESET),
-            new Bilde($jobb)
+            new Bilde($jobb),
+            new Metadata($jobb)
         ];
     }
 
@@ -78,10 +81,13 @@ class Archive extends Common
     {
         $hd = new HD($jobb, null);
         $mobil = new Mobil($jobb, null);
+        
         return array_merge(
             parent::getFilesToDelete($jobb),
-            $hd->getOutputFilePath(),
-            $mobil->getOutputFilePath()
+            [
+                $hd->getOutputFilePath(),
+                $mobil->getOutputFilePath()
+            ]
         );
     }
 }

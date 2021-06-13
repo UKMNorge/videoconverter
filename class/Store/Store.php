@@ -16,6 +16,10 @@ class Store
 
     const MAX_TRANSFER_TIME = 60; // seconds
 
+    const DB_STATUS_TRIGGER = 'store';
+    const DB_STATUS_ACTIVE = 'transferring';
+    const DB_STATUS_DONE = 'transferred';
+
     /**
      * Kjører det allerede en lagringsjobb?
      *
@@ -26,9 +30,11 @@ class Store
 
         $query = new Query(
             "SELECT `id` FROM `ukmtv`
-            WHERE `status_progress` = 'transferring'
+            WHERE `status_progress` = '#status'
             LIMIT 1",
-            [],
+            [
+                'status' => static::DB_STATUS_ACTIVE
+            ],
             'videoconverter'
         );
 
@@ -46,29 +52,28 @@ class Store
     {
         # Finn neste jobb, og oppdater status om at vi er i gang
         $jobb = static::getNext();
-        $jobb->saveStatus('transferring');
+        $jobb->saveStatus(static::DB_STATUS_ACTIVE);
 
         # Sett opp loggeren
-        Logger::setId('STORE');
+        Logger::setId(
+            strtoupper(
+                substr(get_called_class(), strrpos(get_called_class(), '\\'))
+            )
+        );
         Logger::setCron($jobb->getId());
 
         # Overfør de ulike utgavene av filen
-        foreach (Converter::getVersjoner($jobb) as $versjon) {
-            Logger::log('SEND VERSJON ' . get_class($versjon) . ' TIL ' .  Converter::getStorageServerEndpoint());
+        foreach (static::getVersjoner($jobb) as $versjon) {
+            Logger::log('SEND VERSJON ' . get_class($versjon) . ' TIL LAGRING');
             static::transfer($versjon);
         }
 
         # Overføring ferdig, oppdater databasen
-        Logger::log('Alle versjoner sendt til videostorage');
-        $jobb->saveStatus('transferred');
+        Logger::log('Alle versjoner sendt til lagring');
+        $jobb->saveStatus(static::DB_STATUS_DONE);
 
-        # Varsle UKM.no om at filen er ferdig
-        Logger::log('Notify ' . UKM_HOSTNAME);
-        try {
-            static::register($jobb);
-        } catch (Exception $e) {
-            Logger::log('IKKE REGISTRERT!');
-        }
+        # Varsle andre tjenester
+        static::notify($jobb);
 
         # Avgjør hva som skjer videre med jobben
         # Cron-jobber følger opp dette basert på database-info
@@ -81,7 +86,62 @@ class Store
         return true;
     }
 
-    private static function cleanup(Jobb $jobb): bool
+    /**
+     * Varsle UKM.no om at filmen er lagret
+     *
+     * @param Jobb $jobb
+     * @return boolean
+     */
+    private static function notify(Jobb $jobb): bool
+    {
+        # Varsle UKM.no om at filen er ferdig
+        Logger::log('Notify ' . UKM_HOSTNAME);
+        try {
+            static::register($jobb);
+        } catch (Exception $e) {
+            Logger::log('IKKE REGISTRERT!');
+        }
+    }
+
+    /**
+     * Hent hvilke fil-versjoner som skal lagres
+     *
+     * @param Jobb $jobb
+     * @return array<Versjon>
+     */
+    protected static function getVersjoner(Jobb $jobb): array
+    {
+        return Converter::getVersjoner($jobb);
+    }
+
+    /**
+     * Slett unna midlertidige filer brukt i konverteringen
+     * 
+     * @param Jobb $jobb
+     * @return boolean
+     */
+    protected static function cleanup(Jobb $jobb): bool
+    {
+        foreach (static::getFilesToDelete($jobb) as $fil) {
+            Logger::log('SLETT: ' . $fil);
+            if (file_exists($fil)) {
+                unlink($fil);
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * Avgjør hvilke filer som skal slettes når lagring er gjennomført
+     *
+     * Loggene slettes først ved overføring til lagringsserver, i tilfelle vi
+     * trenger å debugge selve konverteringen
+     *
+     * @param Jobb $jobb
+     * @return array<String>
+     */
+    protected static function getFilesToDelete(Jobb $jobb): array
     {
         $filer = [];
 
@@ -91,16 +151,7 @@ class Store
             $filer[] = $versjon->getOutputFilePath();
         }
 
-
-        foreach ($filer as $fil) {
-            Logger::log('SLETT: ' . $fil);
-            if (file_exists($fil)) {
-                Logger::log('TOOD: faktisk slett fila da');
-                #unlink($fil);
-            }
-        }
-
-        return true;
+        return $filer;
     }
 
     /**
@@ -175,15 +226,17 @@ class Store
      * @param Versjon $versjon
      * @return void
      */
-    private static function transfer(Versjon $versjon)
+    protected static function transfer(Versjon $versjon)
     {
         $fil = $versjon->getOutputFilePath();
         $data = static::getFileDataArray($versjon);
 
-        Logger::log('FIL:');
-        Logger::log($fil);
-        Logger::log('DATA:');
-        Logger::log($data);
+        Logger::log('FIL: ' . $fil);
+        if (is_array($data)) {
+            foreach ($data as $key => $val) {
+                Logger::log('DATA(' . $key . '): ' . var_export($val, true));
+            }
+        }
 
         $curl = new CurlFileUploader(
             $fil,     # File to send
@@ -238,17 +291,6 @@ class Store
         ];
     }
 
-    public static function completed()
-    {
-        // Settings status to transferring
-        // End of script will set status back to
-        // a) converting (if status_final_convert not is complete)
-        // b) archive (if status_final_convert is complete)
-        // Script convert_final.cron will follow up on case a
-        // Script archive.cron will follow up on case b
-
-    }
-
     /**
      * Signer data som sendes
      * 
@@ -283,10 +325,12 @@ class Store
     {
         $query = new Query(
             "SELECT * FROM `" . Converter::TABLE . "`
-            WHERE `status_progress` = 'store'
+            WHERE `status_progress` = '#status'
             ORDER BY `id` ASC
             LIMIT 1",
-            [],
+            [
+                'status' => static::DB_STATUS_TRIGGER
+            ],
             'videoconverter'
         );
 

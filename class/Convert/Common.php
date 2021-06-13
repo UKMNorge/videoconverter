@@ -25,7 +25,6 @@ abstract class Common implements ConvertInterface
      */
     public static function isRunning(): bool
     {
-
         $query = new Query(
             "SELECT `id` FROM `ukmtv`
 		    WHERE `status_progress` = 'converting'
@@ -49,7 +48,12 @@ abstract class Common implements ConvertInterface
         $jobb = static::getNext();
 
         # Setter opp loggeren
-        Logger::setId('Convert::' . substr(get_called_class(), strrpos(get_called_class(), '\\')));
+        Logger::setId(
+            'Convert::' . substr(
+                get_called_class(),
+                strrpos(get_called_class(), '\\')+1
+            )
+        );
         Logger::setCron($jobb->getId());
 
         # Starter timeren
@@ -69,7 +73,11 @@ abstract class Common implements ConvertInterface
         # Kjør ffmpeg på de ulike utgavene
         foreach( static::getVersjoner( $jobb ) as $versjon ) {
             $timer_versjon = new Timer( get_class($versjon) );
-            static::ffmpeg( $jobb, $versjon );
+            if( $versjon::erFFmpegVersjon() ) {
+                #static::ffmpeg( $jobb, $versjon );
+            } else {
+                $versjon->execute($jobb);
+            }
             Logger::log( $timer_versjon->__toString() );
         }
         Logger::log('Alle versjoner konvertert');
@@ -102,6 +110,10 @@ abstract class Common implements ConvertInterface
 
     /**
      * Finn filer som skal slettes
+     * 
+     * Sletter kun datafilene for x264, da logg-filer er nyttig
+     * å ha ved debugging. De slettes derfor ved overføring til 
+     * lagringsserver (for da kan vi anta at alt er OK)
      *
      * @param Jobb $jobb
      * @return array<String>
@@ -175,8 +187,6 @@ abstract class Common implements ConvertInterface
             'videoconverter'
         );
         $cron_id = $query->getField();
-
-        echo $query->debug();
 
         if (!$cron_id) {
             throw new Exception(
