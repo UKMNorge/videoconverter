@@ -59,7 +59,7 @@ class Logger {
      * @return void
      */
     public static function setCron( Int $cron_id ): void {
-        static::$cron = '(CRON:'. (string) $cron_id .') '; 
+        static::$cron = 'CRON:'. (string) $cron_id .' '; 
         static::setLocation('cron_'. $cron_id);
     }
 

@@ -16,11 +16,15 @@ if( First::hasTodo() ) {
     die('There\'s a queue for first convert. Making content available is the top priority.');
 }
 
+if( Second::isRunning() ) {
+    die('A friend of mine\'s currently working on a second convert. I\'ll wait for him to finish');
+}
 
 # Hvis vi har noe som skal gjøres, gjør det
 if( Second::hasTodo() ) {
     Second::startNext();
     #Trigger::nextSecondConvert();
+    die('Success');
 }
 
-echo 'Success!';
+die('There\'s nothing for me to do 😭');

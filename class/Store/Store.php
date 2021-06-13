@@ -49,7 +49,7 @@ class Store
         $jobb->saveStatus('transferring');
 
         # Sett opp loggeren
-        Logger::setId('Store::' . basename(get_called_class()));
+        Logger::setId('STORE');
         Logger::setCron($jobb->getId());
 
         # Overfør de ulike utgavene av filen
@@ -95,7 +95,8 @@ class Store
         foreach ($filer as $fil) {
             Logger::log('SLETT: ' . $fil);
             if (file_exists($fil)) {
-                unlink($fil);
+                Logger::log('TOOD: faktisk slett fila da');
+                #unlink($fil);
             }
         }
 
@@ -225,6 +226,8 @@ class Store
         $timestamp = time();
         $file_hash = hash_file('sha256', $versjon->getOutputFilePath());
         $signature = static::sign($file_hash, $versjon, $timestamp);
+        Logger::log('SIGN:' . $signature);
+
 
         return [
             'file_name' => $versjon->getFilnavn(),                      # Filnavn som filen skal ha

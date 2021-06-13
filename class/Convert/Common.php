@@ -49,7 +49,7 @@ abstract class Common implements ConvertInterface
         $jobb = static::getNext();
 
         # Setter opp loggeren
-        Logger::setId('Convert::' . basename(get_called_class()));
+        Logger::setId('Convert::' . substr(get_called_class(), strrpos(get_called_class(), '\\')));
         Logger::setCron($jobb->getId());
 
         # Starter timeren
@@ -175,6 +175,8 @@ abstract class Common implements ConvertInterface
             'videoconverter'
         );
         $cron_id = $query->getField();
+
+        echo $query->debug();
 
         if (!$cron_id) {
             throw new Exception(

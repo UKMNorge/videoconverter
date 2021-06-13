@@ -17,8 +17,10 @@ class Second extends Common {
      * @return String
      */
     public static function getNextQueryWhere() : String {
-        return "WHERE `status_progress` = 'archive'
-		    AND (`status_archive` IS NULL OR `status_archive` = 'convert')";
+        return "
+        WHERE `status_progress` = 'converting'
+        AND `status_first_convert` = 'complete'
+        AND (`status_final_convert` IS NULL OR `status_final_convert` = 'convert')";
     }
 
     /**
@@ -33,9 +35,8 @@ class Second extends Common {
     {
         $query = new Query(
             "SELECT `id`
-            FROM `" . Converter::TABLE . "`
-            WHERE `status_final_convert` != 'complete'
-    		 AND `status_progress` = 'converting'
+            FROM `" . Converter::TABLE . "` "
+            . static::getNextQueryWhere() ."
             LIMIT 1"
         );
 
