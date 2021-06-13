@@ -146,18 +146,26 @@ class Store
         $result = $registrer->request($url);
 
         Logger::log(UKM_HOSTNAME . ' svarte:');
-        foreach ($result as $key => $val) {
-            Logger::log('SEND(' . $key . ') => ' . var_export($val, true));
-        }
-
-        Logger::log('RESULT:');
         Logger::log($result);
 
-        if ($result && isset($result->data->success) && $result->data->success) {
-            return true;
+        if (is_object($result)) {
+            if ($result && isset($result->success) && $result->success) {
+                Logger::log('Success');
+                return true;
+            }
+
+            throw new Exception(
+                Logger::log(
+                    'Kunne ikke registrere filen i UKM-TV.'
+                )
+            );
         }
 
-        throw new Exception('Kunne ikke registrere film hos ' . UKM_HOSTNAME);
+        throw new Exception(
+            Logger::log(
+                'Fikk ikke kontakt med ' . UKM_HOSTNAME . '.'
+            )
+        );
     }
 
     /**
@@ -188,24 +196,22 @@ class Store
 
         Logger::log('Svar fra videostorage:');
         Logger::log($result);
+        if (!is_object($result)) {
+            $versjon->getJobb()->saveStatus('crashed');
+            throw new Exception(
+                Logger::notify('Fikk ikke kontakt med videostorage')
+            );
+        }
 
-        if ($result[0]) {
-            $rapport = json_decode($result[1]);
-
-            if ($rapport->success) {
-                Logger::log(get_class($versjon) . ' lagret');
-                return true;
-            }
+        if ($result->success) {
+            Logger::log(get_class($versjon) . ' lagret');
+            return true;
+        } else {
             $versjon->getJobb()->saveStatus('crashed');
             throw new Exception(
                 Logger::notify('Kunne ikke lagre ' . get_class($versjon))
             );
         }
-
-        $versjon->getJobb()->saveStatus('crashed');
-        throw new Exception(
-            Logger::notify('Fikk ikke kontakt med videostorage')
-        );
     }
 
     /**
@@ -254,9 +260,10 @@ class Store
     private static function sign(String $file_hash, Versjon $versjon, Int $timestamp): String
     {
         $message = 'file_path=' . $versjon->getJobb()->getFil()->getBane() .
-            'file_hash=' . $file_hash .
+            '&file_hash=' . $file_hash .
             '&timestamp=' . $timestamp;
 
+        Logger::log('MESSAGE:' . $message);
         return hash_hmac(
             'sha256',
             $message,

@@ -19,7 +19,7 @@ class Logger {
      */
     public static function log( $message ): String {
         if( is_bool($message) ) {
-            $message = 'BOOL:'. $message ? 'TRUE' : 'FALSE';
+            $message = 'BOOL:'. ($message ? 'TRUE' : 'FALSE');
         } elseif( is_scalar($message)) {
             $message = (string) $message;
         } else {
