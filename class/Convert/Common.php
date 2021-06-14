@@ -170,7 +170,7 @@ abstract class Common implements ConvertInterface
         $query->add(static::DB_FIELD, 'complete');
         $query->add('status_progress', 'store');
         $query->run();
-        Logger::log('SUCCESS! END OF CRON');
+        Logger::log('SUCCESS!');
     }
 
     /**

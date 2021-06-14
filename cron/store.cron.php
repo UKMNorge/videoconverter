@@ -13,7 +13,10 @@ ini_set('max_execution_time', Store::MAX_TRANSFER_TIME);
 if( Store::isRunning() ) {
     die('Already transferring one film. Waiting for this to finish');
 }
-
-Store::startNext();
+try {
+    Store::startNext();
+} catch( Exception $e ) {
+    die($e->getMessage());
+}
 
 die('Success');

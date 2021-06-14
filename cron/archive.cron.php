@@ -15,6 +15,10 @@ if( Archive::isRunning() ) {
     die('Already transferring one film. Waiting for this to finish');
 }
 
-Archive::startNext();
+try {
+    Archive::startNext();
+} catch( Exception $e ) {
+    die($e->getMessage());
+}
 
 die('Success');
