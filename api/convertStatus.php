@@ -1,14 +1,14 @@
 <?php
-require_once('UKMconfig.inc.php');
+
+use UKMNorge\Videoconverter\Jobb;
+
+require_once('../inc/autoloader.php');
 require_once('../inc/headers.inc.php');
-require_once('../inc/config.inc.php');
 
 if( !isset( $_GET['cron_id'] ) ) {
 	die( json_encode( array('success'=>false, 'message'=>'Missing CronID') ) );
 }
 
-$sql = "SELECT * FROM `ukmtv` WHERE `id` = '". (int) $_GET['cron_id'] ."';";
-$res = mysql_query( $sql );
-$cron = mysql_fetch_assoc( $res );
+$jobb = new Jobb((int) $_GET['cron_id']);
 
-die( json_encode( array('success'=>true, 'data'=> $cron ) ) );
+die( json_encode( array('success'=>true, 'data'=> $jobb->getDatabaseData() ) ) );
