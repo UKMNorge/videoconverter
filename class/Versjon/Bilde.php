@@ -14,7 +14,7 @@ class Bilde extends Versjon
         return
             'ffmpeg '
             . '-y '                                             # overskriv fil uten å spørre
-            . '-i ' . $this->getInputFilePath() . ' '               # Input-fil
+            . '-i ' . $this->getInputFilePath() . ' '            # Input-fil
             . '-an '                                            # Drop audio, spar tid
             . '-ss ' . gmdate("H:i:s", $this->getJobb()->getFilm()->getBildePosisjon()) . ' '    # @ second 08
             . '-r 1 '                                           # Framerate 1

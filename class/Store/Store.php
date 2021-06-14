@@ -9,6 +9,7 @@ use UKMNorge\Videoconverter\Converter;
 use UKMNorge\Videoconverter\Database\Query;
 use UKMNorge\Videoconverter\Jobb;
 use UKMNorge\Videoconverter\Utils\Logger;
+use UKMNorge\Videoconverter\Versjon\Bilde;
 use UKMNorge\Videoconverter\Versjon\Versjon;
 
 class Store
@@ -153,6 +154,11 @@ class Store
             $filer[] = $versjon->getFirstPassLogPath();
             $filer[] = $versjon->getSecondPassLogPath();
             $filer[] = $versjon->getOutputFilePath();
+
+            # Bilde-versjonen lager også en _image.txt-fil som skal bort
+            if( get_class($versjon) == Bilde::class ) {
+                $filer[] = $versjon->getOutputFilePath().'_image.txt';
+            }
         }
 
         return $filer;
