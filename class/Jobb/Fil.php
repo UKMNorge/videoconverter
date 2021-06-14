@@ -65,7 +65,11 @@ class Fil
      */
     public function getNavnUtenExtension(): String
     {
-        return rtrim($this->getNavn(), $this->getExtension());
+        return substr(
+            $this->getNavn(),
+            0,
+            strrpos( $this->getNavn(), $this->getExtension())
+        );
     }
 
     /**
