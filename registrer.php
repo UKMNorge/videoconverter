@@ -9,6 +9,7 @@ use UKMNorge\Videoconverter\Trigger;
 use UKMNorge\Videoconverter\Utils\Logger;
 
 require_once('inc/autoloader.php');
+require_once('inc/headers.inc.php');
 
 header('Content-Type: application/json; charset=utf-8');
 
