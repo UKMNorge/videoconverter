@@ -157,7 +157,7 @@ class Store
 
             # Bilde-versjonen lager også en _image.txt-fil som skal bort
             if( get_class($versjon) == Bilde::class ) {
-                $filer[] = $versjon->getOutputFilePath().'_image.txt';
+                $filer[] = $versjon->getImageLogPath();
             }
         }
 

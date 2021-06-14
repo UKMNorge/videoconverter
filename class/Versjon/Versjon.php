@@ -115,7 +115,7 @@ abstract class Versjon implements VersjonInterface
      *
      * @return String
      */
-    protected function getImageLogPath(): String
+    public function getImageLogPath(): String
     {
         return $this->getLogPath() . '_image.txt';
     }

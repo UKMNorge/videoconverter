@@ -83,6 +83,8 @@ class Archive extends Store
 
         foreach (static::getVersjoner($jobb) as $versjon) {
             $filer[] = $versjon->getOutputFilePath();
+            $filer[] = $versjon->getFirstPassLogPath();
+            $filer[] = $versjon->getSecondPassLogPath();
         }
 
         return $filer;
