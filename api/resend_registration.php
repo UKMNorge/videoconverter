@@ -6,29 +6,18 @@
  * In case converting is completed before user press save
  */
 
-require_once('UKMconfig.inc.php');
-require_once('../inc/config.inc.php');
-require_once('../inc/functions.inc.php');
-require_once('../inc/curl.class.php');
+use UKMNorge\Videoconverter\Jobb;
+use UKMNorge\Videoconverter\Store\Store;
+
+require_once('../inc/autoloader.php');
+require_once('../inc/headers.inc.php');
 
 if (!isset($_GET['cronId'])) {
     die(json_encode(false));
 }
 
-// FIND REQUESTED CRON
-$res = mysql_query(
-    "SELECT * 
-    FROM `ukmtv` 
-    WHERE `id` = '" . intval($_GET['cronId']) . "'
-    AND `status_first_convert` = 'complete'
-    LIMIT 1"
-);
-if( !$res ) {
-    die(json_encode(false));
-}
+# Send registreringen på nytt
+$jobb = new Jobb((int)$_GET['cronId']);
+Store::register($jobb);
 
-$cron = mysql_fetch_assoc($res);
-$register = new UKMCURL();
-$register->post($cron);
-$register->request('https://api.' . UKM_HOSTNAME . '/video:registrer/' . $cron['cronId']);
 die(json_encode(true));

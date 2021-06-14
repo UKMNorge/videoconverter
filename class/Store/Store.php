@@ -194,7 +194,7 @@ class Store
      * @throws Exception
      * @return bool true
      */
-    private static function register(Jobb $jobb)
+    public static function register(Jobb $jobb)
     {
         $url = Converter::getVideoRegistrationEndpoint($jobb->getId());
 

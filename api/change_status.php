@@ -1,43 +1,54 @@
 <?php
-require_once('UKMconfig.inc.php');
+
+use UKMNorge\Videoconverter\Jobb;
+use UKMNorge\Videoconverter\Utils\Logger;
+
+require_once('../inc/autoloader.php');
 require_once('../inc/headers.inc.php');
 
-if( !isset( $_GET['id'] ) || !isset( $_GET['hash'] ) || !isset( $_GET['action'] ) ) {
+# Sjekk at vi har påkrevde parametre
+if (!isset($_GET['id']) || !isset($_GET['hash']) || !isset($_GET['action'])) {
 	die('Mangler parametre');
 }
 
-$ID = $_GET['id'];
-$HASH = $_GET['hash'];
-$ACTION = $_GET['action'];
-
-require_once('../inc/config.inc.php');
-
-$test = "SELECT `file_name` FROM `ukmtv` WHERE `id` = '". $ID ."'";
-$test = mysql_query( $test );
-if( mysql_num_rows( $test ) > 0 ) {
-	$row = mysql_fetch_assoc( $test );
-	$hashtest = md5( $ACTION . $row['file_name'] . UKM_VIDEOSTORAGE_UPLOAD_KEY . $ID );
-	if( $hashtest !== $HASH ) {
-		die('Ugyldig hash');
-	}
-	
-	define('CRON_ID', $ID );
-	define('LOG_SCRIPT_NAME', 'API CHANGE STATUS');
-	ini_set("error_log", DIR_LOG . 'cron_'. CRON_ID .'.log');
-	require_once('../inc/functions.inc.php');
-
-	switch( $ACTION ) {
-		case 'delete':
-			require_once('change_status/delete.php');
-			die();
-		case 'store':
-			require_once('change_status/store.php');
-			die();
-		case 'registered':
-			require_once('change_status/registered.php');
-			die();
-	}
-	
-	die('Ukjent handling');
+# Prøv å hente inn jobbem
+try {
+	$jobb = new Jobb((int) $_GET['id']);
+} catch (Exception $e) {
+	die($e->getMessage());
 }
-die('Cron ikke funnet');
+
+# Sjekk at hash er gyldig
+if ($_GET['hash'] !== md5($_GET['action'] . $jobb->getFil()->getNavn() . UKM_VIDEOSTORAGE_UPLOAD_KEY . $jobb->getId())) {
+	die('Ugyldig hash');
+}
+
+# Klargjør logger
+Logger::setId('API_CHANGE_STATUS');
+Logger::setCron($jobb->getId());
+
+header('Content-Type: application/json');
+
+# Do the action
+switch ($_GET['action']) {
+	case 'delete':
+		Logger::log('Slett jobben'); // aka does_not_exist
+		$jobb->delete();
+		break;
+	case 'store':
+		Logger::log('Restart lagringsprosess');
+		$jobb->saveStatus('store');
+		$jobb->resetAdminNotice();
+		break;
+	case 'registered':
+		Logger::log('Restart jobben');
+		$jobb->restart();
+		break;
+	default:
+		die(Logger::log('Ukjent handling ' . $_GET['action']));
+}
+
+die(json_encode([
+	'action' => $_GET['action'],
+	'success' => true
+]));

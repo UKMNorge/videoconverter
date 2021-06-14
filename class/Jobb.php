@@ -10,6 +10,7 @@ use UKMNorge\Videoconverter\Database\Update;
 use UKMNorge\Videoconverter\Jobb\Eier;
 use UKMNorge\Videoconverter\Jobb\Film;
 use UKMNorge\Videoconverter\Jobb\Fil;
+use UKMNorge\Videoconverter\Utils\Logger;
 
 class Jobb
 {
@@ -39,8 +40,12 @@ class Jobb
     /**
      * @var Array
      */
-    private $data;    
+    private $data;
 
+    /**
+     * @var string
+     */
+    private $status;
     /**
      * Registrer en konverteringsjobb
      *
@@ -80,12 +85,12 @@ class Jobb
         $filbane = Fil::finnFilbane($eier, $film);
         $filnavn = Fil::finnFilnavn($eier, $film, $cron_id, Fil::finnExtension($file));
         $jobb->fil = new Fil($filbane, $filnavn);
-        
+
         // HENTER DETALJER OM FILFORMAT
         $jobb->getFilm()->beregnDetaljerFraFil($file);
-        
+
         // FLYTT FILEN TIL CONVERT-MAPPA
-        $jobb->getFil()->flytt()->tilConvert( $file );
+        $jobb->getFil()->flytt()->tilConvert($file);
 
         // OPPDATERER DATABASEN
         $update = new Update(Converter::TABLE, ['id' => $cron_id]);
@@ -158,7 +163,7 @@ class Jobb
             $data['file_path'],
             $data['file_name']
         );
-
+        $this->status = $data['status_progress'];
         $this->data = $data;
     }
 
@@ -176,9 +181,76 @@ class Jobb
                 'Kan ikke sette jobb-status til ' . $status . ' da den ikke er støttet'
             );
         }
+        $this->update('status_progress', $status);
+    }
+
+    /**
+     * Fjern flagget om at admin må se over denne jobben
+     *
+     * @return boolean
+     */
+    public function resetAdminNotice(): bool
+    {
+        return $this->update('admin_notice', false);
+    }
+
+    /**
+     * Start konverteringsjobben helt på nytt 😬
+     *
+     * @return bool
+     */
+    public function restart(): bool
+    {
+        Logger::log('RESTART JOBB');
+        $update = new Update(
+            Converter::TABLE,
+            [
+                'id' => $this->getId()
+            ]
+        );
+        $update->add('status_progress', 'registered');
+        $update->add('status_first_convert', NULL);
+        $update->add('status_final_convert', NULL);
+        $update->add('status_archive', NULL);
+        $update->add('admin_notice', 'false');
+
+        return !!$update->run();
+    }
+
+    /**
+     * Merk jobben som slettet 👋
+     *
+     * @return boolean
+     */
+    public function delete(): bool {
+        $this->saveStatus('does_not_exist');
+        $this->resetAdminNotice();
+        return true;
+    }
+
+    /**
+     * Oppdater et databasefelt
+     *
+     * @param String $field
+     * @param any $data
+     * @return boolean
+     */
+    private function update(String $field, $data): bool
+    {
         $query = new Update(Converter::TABLE, ['id' => $this->getId()]);
-        $query->add('status_progress', $status);
-        $query->run();
+        $query->add($field, $data);
+        $res = $query->run();
+        return !!$res;
+    }
+
+    /**
+     * Hent jobbens overordnede status
+     *
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return $this->status;
     }
 
     /**
@@ -225,11 +297,20 @@ class Jobb
      * Hent all info vi har om filmen
      * 
      * Burde kanskje begrense noe hva som gis ut her?
+     * Hvis angitt key-parameter, vil den returnere verdi, eller
+     * false hvis verdien ikke finnes
      *
+     * @param String $key = null
      * @return Array
      */
-    public function getDatabaseData(): array
+    public function getDatabaseData(String $key = null): array
     {
+        if (!is_null($key)) {
+            if (isset($this->data[$key])) {
+                return $this->data[$key];
+            }
+            return false;
+        }
         return $this->data;
     }
 }
