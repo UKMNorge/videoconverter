@@ -76,7 +76,7 @@ abstract class Common implements ConvertInterface
         foreach( static::getVersjoner( $jobb ) as $versjon ) {
             $timer_versjon = new Timer( get_class($versjon) );
             if( $versjon::erFFmpegVersjon() ) {
-                #static::ffmpeg( $jobb, $versjon );
+                static::ffmpeg( $jobb, $versjon );
             } else {
                 $versjon->execute($jobb);
             }
