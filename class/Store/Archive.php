@@ -92,12 +92,12 @@ class Archive extends Store
      * Varsle andre tjenester om at arkiveringen er gjort?
      *
      * @param Jobb $jobbprotected
-     * @return void
+     * @return bool
      */
-    protected static function notify(Jobb $jobb): void
+    protected static function notify(Jobb $jobb): bool
     {
         // TODO: skal denne gjøre noe?
-
+        return true;
     }
 
     public static function decideNextStep(Jobb $jobb): void

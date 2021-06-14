@@ -104,6 +104,7 @@ class Store
         } catch (Exception $e) {
             Logger::log('IKKE REGISTRERT!');
         }
+        return true;
     }
 
     /**
