@@ -49,9 +49,11 @@ abstract class Common implements ConvertInterface
 
         # Setter opp loggeren
         Logger::setId(
-            'Convert::' . substr(
-                get_called_class(),
-                strrpos(get_called_class(), '\\')+1
+            strtoupper(
+                'CONVERT_' . substr(
+                    get_called_class(),
+                    strrpos(get_called_class(), '\\')+1
+                )
             )
         );
         Logger::setCron($jobb->getId());

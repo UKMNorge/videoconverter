@@ -57,7 +57,10 @@ class Store
         # Sett opp loggeren
         Logger::setId(
             strtoupper(
-                substr(get_called_class(), strrpos(get_called_class(), '\\'))
+                substr(
+                    get_called_class(),
+                    strrpos(get_called_class(), '\\')+1
+                )
             )
         );
         Logger::setCron($jobb->getId());

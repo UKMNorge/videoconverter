@@ -47,7 +47,7 @@ class Logger {
      * @return void
      */
     public static function setId( String $id ) : void {
-        static::$id = $id.': ';
+        static::$id = $id;
     }
 
     /**
@@ -59,7 +59,7 @@ class Logger {
      * @return void
      */
     public static function setCron( Int $cron_id ): void {
-        static::$cron = 'CRON:'. (string) $cron_id .' '; 
+        static::$cron = '(cron'. (string) $cron_id .'): '; 
         static::setLocation('cron_'. $cron_id);
     }
 
