@@ -6,6 +6,7 @@ use UKMNorge\Videoconverter\Database\Insert;
 ini_set('display_errors', true);
 
 # Autoloader for UKMlib
+require_once('UKMconfig.inc.php');
 require_once('UKM/Autoloader.php');
 
 # Autoloader for UKMNorge\Videoconverter
