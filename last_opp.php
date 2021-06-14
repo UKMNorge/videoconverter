@@ -1,17 +1,14 @@
 <?php
 
 use UKMNorge\Videoconverter\Converter;
-use UKMNorge\Videoconverter\Eier;
-use UKMNorge\Videoconverter\Film;
-use UKMNorge\Videoconverter\Job;
 use UKMNorge\Videoconverter\Jobb\Flytt;
 
 ini_set("log_errors", 1);
-ini_set("error_log", dirname(__FILE__).'/error.log');
-ini_set('display_errors', 0);
+ini_set('display_errors', false);
 
 require_once('inc/autoloader.php');
 require_once('inc/headers.inc.php');
+require_once('inc/jQupload_handler.inc.php');
 
 ################################################
 ## END WITH SUCCESS IF OPTIONS-REQUEST.
@@ -20,13 +17,11 @@ if( $_SERVER['REQUEST_METHOD'] == 'OPTIONS' ) {
 	die('success');
 }
 
-error_log('UPLOADED: '. Flytt::INBOX);
-################################################################################################
-## CHECK FOR, AND SAVE "STATIC INFOS" (STUPID STUFF, NO CALCULATIONS AND SO ON)
-################################################################################################
+error_log('UPLOADING TO: '. Converter::DIR_TEMP . Flytt::INBOX);
+
 ################################################
 ## ACTUALLY PERFORM UPLOAD 
-$upload_handler = new UploadHandler(array('upload_dir' => Flytt::INBOX));
+$upload_handler = new UploadHandler(array('upload_dir' => Converter::DIR_TEMP . Flytt::INBOX));
 
 ################################################
 ## GET THE DATA ARRAY FOR FURTHER MANIPULATING
@@ -57,4 +52,5 @@ if(sizeof($filetype_matches) == 0) {
 ## CREATE RETURN-OBJECT FOR JQUERY UPLOADER
 $data->files[0] = $data_object;
 $data->success = true;
+
 die(json_encode($data));
