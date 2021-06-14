@@ -42,16 +42,4 @@ class Second extends Common {
 
         return !!$query->getField();
     }
-
-    /**
-     * @param Jobb $jobb 
-     * @return void 
-     */
-    static function start( Jobb $jobb ) : void {
-        parent::start($jobb);
-
-        $query = new Update(Converter::TABLE, ['id' => $jobb->getId()]);
-        $query->add('file_name_store', $jobb->getFil()->getNavnUtenExtension() .'.mp4');
-        $query->run();
-    }
 }
