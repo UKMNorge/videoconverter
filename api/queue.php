@@ -5,9 +5,9 @@ require_once('../inc/config.inc.php');
 
 $convert_queue = array();
 $convert_queue['Crashed'] = array();
-$convert_queue['Transferred'] = array();
 $convert_queue['FirstConvert'] = array();
 $convert_queue['FinalConvert'] = array();
+$convert_queue['Transferred'] = array();
 $convert_queue['Archive'] = array();
 
 // ANTALL FIRST-CONVERT I KØ
@@ -24,7 +24,7 @@ $sql = "SELECT	`id`,
 		FROM `ukmtv`
 		WHERE `status_progress` != 'complete'
 		AND `status_progress` != 'does_not_exist'
-		ORDER BY `id` ASC";
+		ORDER BY `id` DESC";
 $res = mysql_query( $sql );
 
 while( $r = mysql_fetch_assoc( $res ) ) {
