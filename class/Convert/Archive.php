@@ -2,6 +2,7 @@
 
 namespace UKMNorge\Videoconverter\Convert;
 
+use UKMNorge\Videoconverter\Converter;
 use UKMNorge\Videoconverter\Database\Query;
 use UKMNorge\Videoconverter\Jobb;
 use UKMNorge\Videoconverter\Versjon\Arkiv;
@@ -89,5 +90,25 @@ class Archive extends Common
                 $mobil->getOutputFilePath()
             ]
         );
+    }
+
+    /**
+     * Finnes det filmer som skal arkiveres
+     * 
+     * Topprioritet for videoconverteren er å tilgjengeliggjøre mest mulig innhold,
+     * og alle andre får dermed vente til alle filmer er førstegangs-konvertert.
+     *
+     * @return boolean
+     */
+    public static function hasTodo(): bool
+    {
+        $query = new Query(
+            "SELECT `id`
+            FROM `" . Converter::TABLE . "`
+            ". static::getNextQueryWhere() ."
+            LIMIT 1"
+        );
+
+        return !!$query->getField();
     }
 }

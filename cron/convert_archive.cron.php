@@ -26,6 +26,8 @@ if( Second::hasTodo() ) {
     die('There\'s a queue for second convert. Archiving will have to wait for those to finish.');
 }
 
-Archive::startNext();
+if( !Archive::isRunning() && Archive::hasTodo() ) {
+    Archive::startNext();
+}
 
 die('Success');
