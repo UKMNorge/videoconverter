@@ -3,9 +3,7 @@
 namespace UKMNorge\Videoconverter\Convert;
 
 use UKMNorge\Videoconverter\Database\Query;
-use UKMNorge\Videoconverter\Database\Update;
 use UKMNorge\Videoconverter\Converter;
-use UKMNorge\Videoconverter\Jobb;
 
 class Second extends Common {
     const PRESET = 'slower';
