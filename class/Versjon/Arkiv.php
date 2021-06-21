@@ -8,7 +8,7 @@ class Arkiv extends Versjon
     const VIDEO_BITRATE = 8000;
     const AUDIO_BITRATE = 360;
     const FILE_ID = '_archive';
-    const HEIGHT = 1080;
+    const HEIGHT = 1080; // og derav oppløsningen
 
     public function getFFmpegKall( String $preset ): String
     {

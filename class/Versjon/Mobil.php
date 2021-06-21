@@ -8,7 +8,7 @@ class Mobil extends Versjon
     const VIDEO_BITRATE = 890;
     const AUDIO_BITRATE = 128;
     const FILE_ID = '_mobile';
-    const HEIGHT = 480;
+    const HEIGHT = 480; // og derav oppløsningen
 
     public function getFFmpegKall( String $preset): String
     {

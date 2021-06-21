@@ -8,7 +8,7 @@ class HD extends Versjon
     const VIDEO_BITRATE = 3000;
     const AUDIO_BITRATE = 190;
     const FILE_ID = '_720p';
-    const HEIGHT = 720;
+    const HEIGHT = 720; // og derav oppløsningen
 
     public function getFFmpegKall( String $preset ): String
     {

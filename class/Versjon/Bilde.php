@@ -7,7 +7,7 @@ class Bilde extends Versjon
 
     const FILE_ID = '';
     const EXT = '.jpg';
-    const HEIGHT = 720;
+    const HEIGHT = 720; // og derav oppløsningen
 
     public function getFFmpegKall(String $preset = null): String
     {
