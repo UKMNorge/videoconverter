@@ -2,7 +2,7 @@
 
 use UKMNorge\Videoconverter\Database\Query;
 
-require_once('../inc/autoloader.inc.php');
+require_once('../inc/autoloader.php');
 require_once('../inc/headers.inc.php');
 
 $convert_queue = [
