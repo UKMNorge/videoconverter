@@ -35,8 +35,8 @@ class Film
         $this->innslag_id = $innslag_id;
 
         if( is_array($data) ) {
-            $this->height = $data['file_width'];
-            $this->width = $data['file_height'];
+            $this->height = $data['file_height'];
+            $this->width = $data['file_width'];
             $this->duration = $data['file_duration'];
             $this->pikselformat = $data['pixel_format'];
         }
