@@ -1,7 +1,7 @@
 Videoconverter
 ==============
 
-What keeps http://videoconverter.ukm.no running - most of the time.
+What keeps the videoconverter running - most of the time.
 
 Videoconverteren mottar filer fra UKM.no, konverterer disse, sender de til [lagring](https://github.com/UKMNorge/videostorage), og varsler UKM.no om at filmen nå er klar til avspilling. Så enkelt. Ish.
 
