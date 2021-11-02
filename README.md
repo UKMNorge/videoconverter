@@ -1,4 +1,4 @@
 videoconverter
 ==============
 
-What keeps http://videoconverter.ukm.no running - sometimes.
+What keeps the videoconverter running - sometimes.
