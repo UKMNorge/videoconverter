@@ -1,51 +1,54 @@
 <?php
-require_once('UKMconfig.inc.php');
-require_once('../inc/headers.inc.php');
-require_once('../inc/config.inc.php');
 
-$convert_queue = array();
-$convert_queue['Crashed'] = array();
-$convert_queue['FirstConvert'] = array();
-$convert_queue['FinalConvert'] = array();
-$convert_queue['Transferred'] = array();
-$convert_queue['Archive'] = array();
+use UKMNorge\Videoconverter\Database\Query;
+
+require_once('../inc/autoloader.php');
+require_once('../inc/headers.inc.php');
+
+$convert_queue = [
+	'Crashed' => [],
+	'Transferred' => [],
+	'FirstConvert' => [],
+	'FinalConvert' => [],
+	'Archive' => []
+];
 
 // ANTALL FIRST-CONVERT I KØ
-$sql = "SELECT	`id`,
-				`status_progress`,
-				`status_first_convert`,
-				`status_final_convert`,
-				`status_archive`,
-				`file_width`,
-				`file_height`,
-				`admin_notice`,
-				`file_name`, 
-				`touch`
-		FROM `ukmtv`
-		WHERE `status_progress` != 'complete'
-		AND `status_progress` != 'does_not_exist'
-		ORDER BY `id` DESC";
-$res = mysql_query( $sql );
+$query = new Query(
+	"SELECT `id`,
+			`status_progress`,
+			`status_first_convert`,
+			`status_final_convert`,
+			`status_archive`,
+			`file_width`,
+			`file_height`,
+			`admin_notice`,
+			`file_name`, 
+			`touch`
+	FROM `ukmtv`
+	WHERE `status_progress` != 'complete'
+	AND `status_progress` != 'does_not_exist'
+	ORDER BY `id` ASC"
+);
+$res = $query->getResults();
 
-while( $r = mysql_fetch_assoc( $res ) ) {
-	
-	
-	if( 	'converting' == $r['status_progress'] && 'complete' == $r['status_final_convert'] ) {
+while( $data = Query::fetch( $res ) ) {
+	if( 	'converting' == $data['status_progress'] && 'complete' == $data['status_final_convert'] ) {
 		$group = 'Archive';
 	} 
-	elseif( 'converting' == $r['status_progress'] && 'complete' == $r['status_first_convert'] ) {
+	elseif( 'converting' == $data['status_progress'] && 'complete' == $data['status_first_convert'] ) {
 		$group = 'FinalConvert';
 	}
-	elseif( 'registered' == $r['status_progress'] ) {
+	elseif( 'registered' == $data['status_progress'] ) {
 		$group = 'FirstConvert';
 	} 
 	else {
-		$group = ucfirst( $r['status_progress'] );
+		$group = ucfirst( $data['status_progress'] );
 	}
 
 
 	if( !isset( $convert_queue[ $group ] ) ) {
-		$convert_queue[ $group ] = array();		
+		$convert_queue[ $group ] = [];		
 	}
 	
 	$convert_queue[ $group ][] = $r;

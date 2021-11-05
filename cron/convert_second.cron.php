@@ -1,6 +1,5 @@
 <?php
 
-use UKMNorge\Videoconverter\Convert\Archive;
 use UKMNorge\Videoconverter\Convert\First;
 use UKMNorge\Videoconverter\Convert\Second;
 
@@ -17,17 +16,15 @@ if( First::hasTodo() ) {
     die('There\'s a queue for first convert. Making content available is the top priority.');
 }
 
-
 if( Second::isRunning() ) {
-    die('Already converting one second-convert job. Awaiting that one');
+    die('A friend of mine\'s currently working on a second convert. I\'ll wait for him to finish');
 }
 
+# Hvis vi har noe som skal gjøres, gjør det
 if( Second::hasTodo() ) {
-    die('There\'s a queue for second convert. Archiving will have to wait for those to finish.');
+    Second::startNext();
+    #Trigger::nextSecondConvert();
+    die('Success');
 }
 
-if( !Archive::isRunning() && Archive::hasTodo() ) {
-    Archive::startNext();
-}
-
-die('Success');
+die('There\'s nothing for me to do 😭');
